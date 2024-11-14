@@ -1,5 +1,7 @@
 import React from 'react';
-import './Dashboard.css'; // Create a CSS file for styling if needed.
+import './Dashboard.css'; 
+import UserInfo from '../components/UserInfo';
+import profilePic from '../assets/profile-test-avatar.png'; // Importing the profile picture
 
 const Dashboard: React.FC = () => {
   // Mock data for demonstration purposes
@@ -22,17 +24,16 @@ const Dashboard: React.FC = () => {
         <button className="dashboard-button">Users</button>
       </aside>
       <main className="dashboard-main">
-        <header className="dashboard-header">
-          <div className="user-info">
-            <p>User Role: Coordinator</p>
-            <p>Employee Number: 12345</p>
-            <p>User Name: Test User</p>
-            <p>Ongoing Jobs in Queue: {ongoingJobs.length}</p>
-          </div>
-        </header>
+        <UserInfo
+              role="Coordinator"
+              employeeNumber="12345"
+              userName="Test User"
+              ongoingJobsCount={ongoingJobs.length}
+              profilePic={profilePic} // Passing the profile picture as a prop
+            />
         <section className="ongoing-jobs-section">
-          <p>Ongoing Jobs</p>
           <div className="ongoing-jobs-table">
+            <div className='ongoing-jobs-header' id='ongoing-label'>Ongoing Jobs</div>
             <div className="ongoing-jobs-header">
               <span>ID</span>
               <span>Name</span>

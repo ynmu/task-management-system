@@ -10,7 +10,7 @@ function App() {
       <NavBar username="TestUser" onLogout={() => console.log('Logout')} />
       <div className='App'>
         <Routes>
-          <Route path='/dashboard' element={<Dashboard />} />
+          <Route path='/' element={<Dashboard />} />
         </Routes>
       </div>
     </Router>

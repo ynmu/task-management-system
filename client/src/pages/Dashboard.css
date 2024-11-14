@@ -35,22 +35,9 @@
 
 .dashboard-main {
   padding: 20px;
-  flex-grow: 1;
   width: 60%;
 }
 
-.dashboard-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 20px;
-}
-
-.user-info p {
-  display: flex;
-  margin: 0 0 5px 0;
-  text-align: center;
-}
 
 .logout-link {
   color: #007bff;
@@ -66,14 +53,11 @@
   margin-top: 20px;
 }
 
-/* .ongoing-jobs-section p {
-  margin-left: 10px;
-  padding-left: 10px;
-} */
 
 .ongoing-jobs-table {
   display: flex;
   flex-direction: column;
+  margin-top: 50px;
 }
 
 .ongoing-jobs-header,
@@ -82,6 +66,13 @@
   justify-content: space-between;
   padding: 10px;
   border: 1px solid #ccc;
+}
+
+
+#ongoing-label {
+  background-color: black;
+  color: white;
+  border: 1px solid black;
 }
 
 .ongoing-job-item input[type="checkbox"] {
