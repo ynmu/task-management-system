@@ -36,17 +36,6 @@
   width: 60%;
 }
 
-
-.logout-link {
-  color: #007bff;
-  text-decoration: none;
-  cursor: pointer;
-}
-
-.logout-link:hover {
-  text-decoration: underline;
-}
-
 .ongoing-jobs-section {
   margin-top: 20px;
 }
