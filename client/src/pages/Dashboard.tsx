@@ -2,6 +2,7 @@ import React from 'react';
 import './Dashboard.css'; 
 import UserInfo from '../components/UserInfo';
 import profilePic from '../assets/profile-test-avatar.png'; // Importing the profile picture
+import './Pages.css';
 
 const Dashboard: React.FC = () => {
   // Mock data for demonstration purposes
@@ -13,12 +14,17 @@ const Dashboard: React.FC = () => {
 
   return (
     <div className="dashboard">
-    <header className="dashboard-header">
+    <header className="page-header">
       <h1>Dashboard</h1>
     </header>
     <div className="dashboard-container">
       <aside className="dashboard-sidebar">
-        <button className="dashboard-button">Add Event</button>
+        <button
+          className="dashboard-button"
+          onClick={() => window.location.href = '/add-event'}>
+            Add Event
+        </button>
+
         <button className="dashboard-button">Edit Event</button>
         <button className="dashboard-button">View Events</button>
         <button className="dashboard-button">Users</button>
