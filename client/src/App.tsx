@@ -1,8 +1,9 @@
 import React from 'react';
 import { BrowserRouter as Router, Route, Routes, Link } from 'react-router-dom';
 import './App.css';
-import NavBar from './components/NavBar'; // Assuming your NavBar component is located in this path
-import Dashboard from './pages/Dashboard'; // Assuming your Dashboard component is located in this path
+import NavBar from './components/NavBar';
+import Dashboard from './pages/Dashboard';
+import AddEventPage from './pages/AddEventPage';
 
 function App() {
   return (
@@ -11,6 +12,7 @@ function App() {
       <div className='App'>
         <Routes>
           <Route path='/' element={<Dashboard />} />
+          <Route path='/add-event' element={<AddEventPage />} />
         </Routes>
       </div>
     </Router>
