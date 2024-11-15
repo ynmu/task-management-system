@@ -70,4 +70,4 @@ export const cityNames = [
     "Surrey",
     "Burnaby",
     "Richmond"
-    ];
+];
