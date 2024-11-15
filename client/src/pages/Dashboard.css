@@ -38,6 +38,7 @@
 
 .ongoing-jobs-section {
   margin-top: 20px;
+  font-size: 18px;
 }
 
 
@@ -55,6 +56,10 @@
   border: 1px solid #ccc;
 }
 
+.ongoing-jobs-header {
+  font-weight: bold;
+}
+
 
 #ongoing-label {
   background-color: black;
@@ -63,5 +68,13 @@
 }
 
 .ongoing-job-item input[type="checkbox"] {
-  margin-left: 10px;
+  cursor: pointer;
+  width: 20px;
+  height: 20px;
+  accent-color: #3c915c; /* Custom color (modern browsers only) */
+}
+
+
+#ongoing-jobs-name {
+  transform: translateX(40px);
 }
