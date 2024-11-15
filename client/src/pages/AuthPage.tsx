@@ -3,6 +3,7 @@ import axios from 'axios';
 import { API_BASE_URL } from '../config';
 import RoleDropdown from '../components/RoleDropdown';
 import { useAuth } from '../context/AuthContext';
+import './AuthPage.css';
 
 const AuthPage: React.FC = () => {
   const [isLogin, setIsLogin] = useState(true);
@@ -11,12 +12,12 @@ const AuthPage: React.FC = () => {
   const [password, setPassword] = useState('');
   const [roleId, setRoleId] = useState<number | null>(null);
   const [roleName, setRoleName] = useState<string | null>(null); // New state for roleName
-  const [message, setMessage] = useState('');
-  const { setUser, setIsAuthenticated } = useAuth();
+  const [feedback, setFeedback] = useState<{ message: string; type: 'success' | 'error' } | null>(null); // Unified state for feedback
+  const { login } = useAuth();
 
   const handleSwitchMode = () => {
     setIsLogin(!isLogin);
-    setMessage('');
+    setFeedback(null); // Clear feedback on mode switch
   };
 
   const handleRoleSelect = (selectedRoleId: number, selectedRoleName: string) => {
@@ -30,28 +31,44 @@ const AuthPage: React.FC = () => {
     try {
       if (isLogin) {
         const response = await axios.post(`${API_BASE_URL}/users/login`, { userName, password });
-        setUser(response.data);
-        setIsAuthenticated(true);
+        login(response.data);
       } else {
         if (roleId === null) {
-          setMessage('Please select a role.');
+          setFeedback({ message: 'Please select a role.', type: 'error' });
           return;
         }
 
         const response = await axios.post(`${API_BASE_URL}/users/signup`, { userName, employeeNumber, roleId, password });
-        setMessage(`User ${response.data.userName} created successfully with role ${roleName}!`);
+        setFeedback({ message: `User ${response.data.userName} created successfully! Logging you in...`, type: 'success' });
+        setTimeout(() => {
+          login(response.data);
+        }, 800);
       }
     } catch (error: any) {
-      setMessage(error.response?.data?.error || `An error occurred: ${error.message}`);
+      setFeedback({ message: error.response?.data?.error || `An error occurred: ${error.message}`, type: 'error' });
     }
   };
 
   return (
     <div className="auth-page">
       <h2>{isLogin ? 'Login' : 'Sign Up'}</h2>
+
+      {feedback && (
+        <p className={`auth-feedback ${feedback.type === 'error' ? 'auth-error' : 'auth-message'}`}>
+          {feedback.message}
+        </p>
+      )}
+
+      <div className="auth-switch">
+        {isLogin ? "New user?" : "Already have an account?"}
+        <button onClick={handleSwitchMode} className="auth-switch-button">
+          {isLogin ? "Click to sign up" : "Click to log in"}
+        </button>
+      </div>
+
       <form onSubmit={handleSubmit} className="auth-form">
         <div className="form-group">
-          <label htmlFor="userName">Username:</label>
+          <label className="auth-form-label" htmlFor="userName">Username</label>
           <input
             type="text"
             id="userName"
@@ -63,7 +80,7 @@ const AuthPage: React.FC = () => {
         {!isLogin && (
           <>
             <div className="form-group">
-              <label htmlFor="employeeNumber">Employee Number:</label>
+              <label className="auth-form-label" htmlFor="employeeNumber">Employee Number</label>
               <input
                 type="number"
                 id="employeeNumber"
@@ -78,7 +95,7 @@ const AuthPage: React.FC = () => {
           </>
         )}
         <div className="form-group">
-          <label htmlFor="password">Password:</label>
+          <label className="auth-form-label" htmlFor="password">Password</label>
           <input
             type="password"
             id="password"
@@ -87,12 +104,8 @@ const AuthPage: React.FC = () => {
             required
           />
         </div>
-        <button type="submit">{isLogin ? 'Login' : 'Sign Up'}</button>
+        <button className="auth-page-submit" type="submit">{isLogin ? 'Login' : 'Sign Up'}</button>
       </form>
-      <button onClick={handleSwitchMode}>
-        {isLogin ? 'Switch to Sign Up' : 'Switch to Login'}
-      </button>
-      {message && <p className="message">{message}</p>}
     </div>
   );
 };

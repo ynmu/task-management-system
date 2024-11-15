@@ -10,7 +10,7 @@ function App() {
   return (
     <AuthProvider>
       <Router>
-        <NavBar username="TestUser" onLogout={() => console.log('Logout')} />
+        <NavBar />
         <div className='App'>
           <Routes>
             <Route path='/' element={<Dashboard />} />

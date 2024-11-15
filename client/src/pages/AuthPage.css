@@ -1,0 +1,129 @@
+.auth-page {
+    padding: 20px;
+    max-width: 600px;
+    margin: auto;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-shadow: 3px 3px 0 rgba(0, 0, 0, 0.2);
+    background-color: #f9f9f9;
+}
+
+.auth-page h2 {
+    font-size: 32px;
+}
+
+.auth-form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 15px;
+    gap: 8px;
+}
+
+
+.auth-form-label {
+    font-size: 20px;
+    font-weight: bold;
+}
+
+
+.form-group input[type="text"],
+.form-group input[type="number"],
+.form-group input[type="password"],
+.form-group select {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 2px;
+    width: 300px;
+    box-sizing: border-box;
+    font-size: 18px;
+}
+
+.form-group input[type="text"]:focus,
+.form-group input[type="number"]:focus,
+.form-group input[type="password"]:focus,
+.form-group select:focus {
+    outline: none;
+    border-color: white;
+}
+
+.form-group select {
+    padding: 12px;
+    font-size: 18px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+
+.form-group select:focus {
+    outline: none;
+    border-color: white;
+}
+
+.auth-page-submit {
+    padding: 10px;
+    width: 100px;
+    margin: 10px auto;
+    font-size: 16px;
+    background-color: black;
+    color: white;
+    border: 1px solid white;
+    cursor: pointer;
+    border-radius: 2px;
+    box-shadow: 3px 3px 0 rgba(0, 0, 0);
+}
+
+.auth-page-submit:hover {
+    background-color: white;
+    color: black;
+    border: 1px solid black;
+}
+
+.auth-message, .auth-error{
+    margin: 15px auto;
+    width: fit-content;
+    padding: 10px;
+    border-radius: 8px;
+    font-size: 18px;
+    font-weight: bold;
+    color: rgb(0, 101, 0);
+    background-color: rgb(207, 255, 207);
+}
+
+.auth-error {
+    color: rgb(158, 0, 0);
+    background-color: rgb(255, 223, 223);
+}
+
+#employeeNumber {
+    font-size: 18px;
+}
+
+
+.auth-switch {
+    font-size: 22px;
+    margin-bottom: 20px;
+}
+
+.auth-switch-button {
+    font-family: "Gill Sans", sans-serif;
+    font-size: 22px;
+    width: fit-content;
+    background-color: transparent;
+    color: black;
+    border: none;
+    box-shadow: none;
+    text-decoration: underline;
+}
+
+.auth-switch-button:hover {
+    background-color: transparent;
+    border: none;
+    font-weight: bold;
+}
