@@ -71,3 +71,10 @@ export const cityNames = [
     "Burnaby",
     "Richmond"
 ];
+
+export const topicNames = [
+    "General Cancer Research",
+    "Breast Cancer",
+    "Blood Cancer",
+    "Gastric Cancer"
+];

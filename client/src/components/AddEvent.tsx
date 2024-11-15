@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Form, Input, Button, DatePicker, Select, InputNumber, message, Row, Col, Table } from 'antd';
-import { columns, cityNames } from "../assets/AddEventTable";
+import { columns, cityNames, topicNames } from "../assets/AddEventTable";
 import './GeneralStyles.css';
 import { API_BASE_URL } from '../config';
 import { useAuth }  from '../context/AuthContext';
@@ -203,9 +203,11 @@ const AddEvent: React.FC = () => {
                             rules={[{ required: true, message: 'Please select a category' }]}
                         >
                             <Select placeholder="Select a category">
-                                <Select.Option value="1">General - Cancer Research</Select.Option>
-                                <Select.Option value="2">Breast Cancer</Select.Option>
-                                <Select.Option value="3">Gastric Cancer</Select.Option>
+                                {topicNames.map(topic => (
+                                    <Select.Option key={topic} value={topic}>
+                                        {topic}
+                                    </Select.Option>
+                                ))}
                             </Select>
                         </Form.Item>
                     </Col>
