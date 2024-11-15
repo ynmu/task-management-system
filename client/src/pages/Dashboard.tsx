@@ -59,10 +59,6 @@ const Dashboard: React.FC = () => {
     }
   };
 
-  if (!isAuthenticated) {
-    return <AuthPage />;
-  }
-
   return (
     <div className="dashboard">
       <header className="page-header">
