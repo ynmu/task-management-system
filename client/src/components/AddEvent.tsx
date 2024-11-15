@@ -1,6 +1,7 @@
 import React, {useEffect, useState} from "react";
 import { Form, Input, Button, DatePicker, Select, TimePicker, message, Row, Col, InputNumber, Table } from 'antd';
-import { columns, cityNames } from "./AddEventTable";
+import { columns, cityNames } from "../assets/AddEventTable";
+import './GeneralStyles.css';
 
 
 const AddEvent: React.FC = () => {
@@ -187,12 +188,12 @@ return (
         </Form.Item>
 
         <Row justify="center" style={{ marginTop: 16 }}>
-                <Button type="primary" htmlType="submit" onClick = {handleSubmit}>Submit</Button>
+                <Button className="custom-antd-button" type="primary" htmlType="submit" onClick = {handleSubmit}>Submit</Button>
         </Row>
     </Form>
 
     {/* Participants List Section*/}
-
+        <div style={{ margin: '24px 0', borderBottom: '1px dashed grey' }}></div>
         <div style={{ marginTop: 24 }}>
             <h3>Participants List</h3>
             <Table
@@ -209,10 +210,10 @@ return (
 
          <Row justify="center" gutter={16} style={{ marginTop: 16 }}>
             <Col>
-                <Button type="primary" onClick={handleSaveEvent}>Save Event</Button>
+                <Button className="custom-antd-button" type="primary" onClick={handleSaveEvent}>Save Event</Button>
             </Col>
             <Col>
-                <Button onClick = {handleCancel}>Cancel</Button>
+                <Button className="custom-antd-button" id="cancel-button" onClick = {handleCancel}>Cancel</Button>
             </Col>
         </Row>
     </>
