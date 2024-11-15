@@ -41,6 +41,32 @@ router.get('/roles', async (req, res) => {
   }
 });
 
+// get all users of a specific role by id
+router.get('/roles/:roleId', async (req, res) => {
+  const { roleId } = req.params;
+  try {
+    const users = await prisma.user.findMany({
+      where: {
+        roleId: parseInt(roleId),
+      },
+      include: {
+        role: true,
+      },
+    });
+    res.status(200).json(
+      users.map((user) => ({
+        id: user.id,
+        userName: user.userName,
+        employeeNumber: user.employeeNumber,
+        roleId: user.roleId,
+        roleName: user.role?.roleName
+      }))
+    );
+  } catch (error) {
+    res.status(500).json({ error: `Failed to fetch users: ${error}` });
+  }
+});
+
 
 // Create a User
 router.post('/signup', async (req, res) => {
