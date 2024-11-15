@@ -1,18 +1,20 @@
-// src/components/ProtectedRoute.tsx
 import React from 'react';
-import { Route, Navigate, Outlet } from 'react-router-dom';
+import { Navigate, Outlet } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import AuthPage from '../pages/AuthPage'; // or any login page you use
+import './Loader.css';
 
 interface ProtectedRouteProps {
   children?: React.ReactNode;
 }
 
 const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, loading } = useAuth();
+
+  if (loading) {
+    return <div className="lds-facebook"><div></div><div></div><div></div></div>
+  }
 
   if (!isAuthenticated) {
-    // Redirect to AuthPage if not authenticated
     return <Navigate to="/auth" />;
   }
 

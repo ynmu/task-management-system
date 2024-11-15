@@ -4,6 +4,7 @@ import { API_BASE_URL } from '../config';
 import RoleDropdown from '../components/RoleDropdown';
 import { useAuth } from '../context/AuthContext';
 import './AuthPage.css';
+import { useNavigate, useLocation } from 'react-router-dom';
 
 const AuthPage: React.FC = () => {
   const [isLogin, setIsLogin] = useState(true);
@@ -13,7 +14,12 @@ const AuthPage: React.FC = () => {
   const [roleId, setRoleId] = useState<number | null>(null);
   const [roleName, setRoleName] = useState<string | null>(null); // New state for roleName
   const [feedback, setFeedback] = useState<{ message: string; type: 'success' | 'error' } | null>(null); // Unified state for feedback
-  const { login } = useAuth();
+  const { isAuthenticated, login } = useAuth();
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  // Capture the location from which the user was redirected
+  const from = location.state?.from?.pathname || '/';  // Default to '/' if no 'from' path is found
 
   const handleSwitchMode = () => {
     setIsLogin(!isLogin);
@@ -25,14 +31,24 @@ const AuthPage: React.FC = () => {
     setRoleName(selectedRoleName); // Store roleName in state
   };
 
+  // if is authenticated, redirect to the dashboard
+  if (isAuthenticated) {
+    navigate('/', { replace: true });
+  }
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     try {
       if (isLogin) {
+        // Handle login logic
         const response = await axios.post(`${API_BASE_URL}/users/login`, { userName, password });
         login(response.data);
+
+        // After successful login, redirect to the target route (either the 'from' page or dashboard)
+        navigate(from, { replace: true });
       } else {
+        // Handle sign-up logic
         if (roleId === null) {
           setFeedback({ message: 'Please select a role.', type: 'error' });
           return;
@@ -40,8 +56,12 @@ const AuthPage: React.FC = () => {
 
         const response = await axios.post(`${API_BASE_URL}/users/signup`, { userName, employeeNumber, roleId, password });
         setFeedback({ message: `User ${response.data.userName} created successfully! Logging you in...`, type: 'success' });
+        
+        // Simulate a delay before logging the user in
         setTimeout(() => {
           login(response.data);
+          // After sign-up, redirect to the target route (either the 'from' page or dashboard)
+          navigate(from, { replace: true });
         }, 800);
       }
     } catch (error: any) {

@@ -12,6 +12,7 @@ interface User {
 interface AuthContextProps {
   isAuthenticated: boolean;
   user: User | null;
+  loading: boolean;
   setIsAuthenticated: (authState: boolean) => void;
   setUser: (user: User | null) => void;
   login: (userData: User) => void;
@@ -23,20 +24,30 @@ const AuthContext = createContext<AuthContextProps | undefined>(undefined);
 export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
   const [user, setUser] = useState<User | null>(null);
+  const [loading, setLoading] = useState<boolean>(true); // Initialize loading state
+
 
   // Load user data from localStorage on component mount
   useEffect(() => {
     const storedUser = localStorage.getItem('user');
-    if (storedUser) {
-      setUser(JSON.parse(storedUser));
-      setIsAuthenticated(true);
-    }
+    console.log('Stored user:', storedUser);
+    setTimeout(() => {
+      if (storedUser) {
+        setUser(JSON.parse(storedUser));
+        setIsAuthenticated(true);
+      } else {
+        setIsAuthenticated(false);
+      }
+      setLoading(false); // Set loading to false after the delay
+    }, 500);
   }, []);
+  
 
   const login = (userData: User) => {
     setUser(userData);
     setIsAuthenticated(true);
     localStorage.setItem('user', JSON.stringify(userData)); // Save user data to localStorage
+    setLoading(false);
   };
 
   const logout = () => {
@@ -46,7 +57,17 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   };
 
   return (
-    <AuthContext.Provider value={{ isAuthenticated, user, setIsAuthenticated, setUser, login, logout }}>
+    <AuthContext.Provider value={
+      {
+        isAuthenticated,
+        user,
+        loading,
+        setIsAuthenticated,
+        setUser,
+        login,
+        logout
+      }
+    }>
       {children}
     </AuthContext.Provider>
   );

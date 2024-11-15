@@ -5,12 +5,12 @@ import { useAuth } from '../context/AuthContext'; // Import useAuth
 
 const Navbar: React.FC = () => {
   const location = useLocation(); // Get the current location
-  const { user, logout } = useAuth(); // Access user data and logout function from the context
+  const { isAuthenticated, user, logout } = useAuth(); // Access user data and logout function from the context
 
   return (
     <nav className="navbar">
       <h1 className="navbar-title">BC Cancer Event Management</h1>
-      {location.pathname !== '/' && (
+      {location.pathname !== '/' && isAuthenticated && (
         <Link to="/" className="navbar-back-button">
           <div>Back to Dashboard</div>
         </Link>
