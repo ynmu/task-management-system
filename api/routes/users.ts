@@ -4,7 +4,7 @@ import bcrypt from 'bcryptjs';
 
 const prisma = new PrismaClient();
 const router = Router();
-const saltRounds = 10;
+const saltRounds = 15;
 
 // Create a role
 router.post('/roles', async (req, res) => {
@@ -51,12 +51,12 @@ router.post('/signup', async (req, res) => {
       where: {
         OR: [
           { userName },
-          { employeeNumber },
+          { employeeNumber: parseInt(employeeNumber, 10) }
         ],
       },
     });
     if (userExists) {
-      res.status(400).json({ error: 'User already exists' });
+      res.status(400).json({ error: 'Username or employee number already exists' });
       return;
     }
 
@@ -78,7 +78,7 @@ router.post('/signup', async (req, res) => {
   }
 });
 
-// sign up
+// log in a user
 router.post('/login', async (req: Request, res: Response) => {
   try {
     const { userName, password } = req.body;

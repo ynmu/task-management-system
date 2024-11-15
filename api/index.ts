@@ -3,6 +3,7 @@ import userRoutes from './routes/users';
 import eventRoutes from './routes/events';
 import attendeeRoutes from './routes/attendees';
 import cors from 'cors';
+import seedRoles from './services/seedRoles';
 
 
 const app = express();
@@ -19,6 +20,11 @@ app.use(cors({
 app.use('/users', userRoutes);
 app.use('/events', eventRoutes);
 app.use('/attendees', attendeeRoutes);
+
+
+(async () => {
+  await seedRoles(); // Seed roles on app startup
+})();
 
 // Start the server
 app.listen(PORT, () => {
