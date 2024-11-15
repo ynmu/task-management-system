@@ -7,7 +7,7 @@ const router = Router();
 // Create an Event
 router.post('/', async (req: Request, res: Response) => {
   try {
-    const { name, description, topic, size, date, location } = req.body;
+    const { name, description, topic, size, date, location, roleId } = req.body;
     const newEvent = await prisma.event.create({
       data: {
         name,
@@ -16,7 +16,8 @@ router.post('/', async (req: Request, res: Response) => {
         size,
         date: new Date(date),
         location,
-        status: false,
+        roleId,
+        status: false
       },
     });
     res.status(201).json(newEvent);
@@ -52,20 +53,61 @@ router.get('/:id', async (req: Request, res: Response) => {
   }
 });
 
+// Get all events of a specific role
+router.get('/role/:roleId', async (req: Request, res: Response) => {
+  const { roleId } = req.params;
+
+  try {
+    // Find the role and include the associated events
+    const roleWithEvents = await prisma.role.findUnique({
+      where: {
+        id: parseInt(roleId),
+      },
+      include: {
+        sharedEvents: true, // This assumes your model relation is correctly set
+      },
+    });
+
+    if (!roleWithEvents) {
+      res.status(404).json({ message: 'Role not found' });
+      return;
+    }
+
+    res.status(200).json(roleWithEvents.sharedEvents);
+  } catch (error) {
+    console.error('Error fetching events for role:', error);
+    res.status(500).json({ error: 'Failed to fetch events for the role' });
+  }
+});
+
+
 // Update an Event
 router.put('/:id', async (req: Request, res: Response) => {
   const { id } = req.params;
-  const { name, description, topic, size, date, location } = req.body;
+  const { name, description, topic, size, date, location, status } = req.body;
+
+  const data: Record<string, any> = {};
+  if (name !== undefined) data.name = name;
+  if (description !== undefined) data.description = description;
+  if (topic !== undefined) data.topic = topic;
+  if (size !== undefined) data.size = size;
+  if (date !== undefined) data.date = new Date(date);
+  if (location !== undefined) data.location = location;
+  if (status !== undefined) data.status = status;
+
   try {
     const updatedEvent = await prisma.event.update({
       where: { id: parseInt(id) },
-      data: { name, description, topic, size, date: new Date(date), location },
+      data, // Use the constructed data object
     });
+    console.log(`PUT /api/events/${id} updated: ${JSON.stringify(updatedEvent)}`);
     res.status(200).json(updatedEvent);
   } catch (error) {
+    console.log(`PUT /api/events/${id} failed: ${error}`);
     res.status(500).json({ error: `Failed to update event: ${error}` });
   }
 });
+
 
 // Delete an Event
 router.delete('/:id', async (req: Request, res: Response) => {
