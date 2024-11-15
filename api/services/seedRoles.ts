@@ -23,7 +23,7 @@ async function seedRoles() {
         });
         console.log(`User role "${roleName}" created.`);
       } else {
-        console.log(`User role "${roleName}" already exists.`);
+        console.log(`User role "${roleName}" already exists. No seeding required.`);
       }
     }
   } catch (error) {

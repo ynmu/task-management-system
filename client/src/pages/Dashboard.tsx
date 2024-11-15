@@ -1,6 +1,6 @@
 // src/pages/Dashboard.tsx
 import React from 'react';
-import { useAuth } from '../context/AuthContext'; // Import the useAuth hook
+import { useAuth } from '../context/AuthContext';
 import './Dashboard.css'; 
 import UserInfo from '../components/UserInfo';
 import profilePic from '../assets/profile-test-avatar.png'; // Importing the profile picture
@@ -14,7 +14,7 @@ interface Job {
 }
 
 const Dashboard: React.FC = () => {
-  const { isAuthenticated } = useAuth();
+  const { user, isAuthenticated } = useAuth();
 
   if (!isAuthenticated) {
     return <AuthPage />; // Display login/signup if not authenticated
@@ -46,9 +46,9 @@ const Dashboard: React.FC = () => {
         </aside>
         <main className="dashboard-main">
           <UserInfo
-            role="Coordinator"
-            employeeNumber="12345"
-            userName="Test User"
+            role={user?.roleName || 'N/A'} // Fallback to 'N/A' if role or roleName is undefined
+            employeeNumber={user?.employeeNumber?.toString() || ''} // Convert to string or use empty string
+            userName={user?.userName || ''} // Fallback to empty string if undefined
             ongoingJobsCount={ongoingJobs.length}
             profilePic={profilePic} // Passing the profile picture as a prop
           />

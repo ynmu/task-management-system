@@ -6,6 +6,7 @@ interface User {
   userName: string;
   employeeNumber: number;
   roleId: number;
+  roleName: string;
 }
 
 interface AuthContextProps {

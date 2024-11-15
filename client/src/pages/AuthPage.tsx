@@ -5,17 +5,23 @@ import RoleDropdown from '../components/RoleDropdown';
 import { useAuth } from '../context/AuthContext';
 
 const AuthPage: React.FC = () => {
-  const { setIsAuthenticated, setUser } = useAuth();
   const [isLogin, setIsLogin] = useState(true);
   const [userName, setUserName] = useState('');
   const [employeeNumber, setEmployeeNumber] = useState(0);
   const [password, setPassword] = useState('');
-  const [roleId, setRoleId] = useState<number | null>(null); // Change initial state to null
+  const [roleId, setRoleId] = useState<number | null>(null);
+  const [roleName, setRoleName] = useState<string | null>(null); // New state for roleName
   const [message, setMessage] = useState('');
+  const { setUser, setIsAuthenticated } = useAuth();
 
   const handleSwitchMode = () => {
     setIsLogin(!isLogin);
     setMessage('');
+  };
+
+  const handleRoleSelect = (selectedRoleId: number, selectedRoleName: string) => {
+    setRoleId(selectedRoleId);
+    setRoleName(selectedRoleName); // Store roleName in state
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -24,8 +30,8 @@ const AuthPage: React.FC = () => {
     try {
       if (isLogin) {
         const response = await axios.post(`${API_BASE_URL}/users/login`, { userName, password });
-        setIsAuthenticated(true);
         setUser(response.data);
+        setIsAuthenticated(true);
       } else {
         if (roleId === null) {
           setMessage('Please select a role.');
@@ -33,7 +39,7 @@ const AuthPage: React.FC = () => {
         }
 
         const response = await axios.post(`${API_BASE_URL}/users/signup`, { userName, employeeNumber, roleId, password });
-        setMessage(`User ${response.data.userName} created successfully!`);
+        setMessage(`User ${response.data.userName} created successfully with role ${roleName}!`);
       }
     } catch (error: any) {
       setMessage(error.response?.data?.error || `An error occurred: ${error.message}`);
@@ -62,12 +68,12 @@ const AuthPage: React.FC = () => {
                 type="number"
                 id="employeeNumber"
                 value={employeeNumber}
-                onChange={(e) => setEmployeeNumber(Number(e.target.value))} // Convert to a number
+                onChange={(e) => setEmployeeNumber(Number(e.target.value))}
                 required
               />
             </div>
             <div className="form-group">
-              <RoleDropdown onRoleSelect={setRoleId} /> {/* Pass callback to RoleDropdown */}
+              <RoleDropdown onRoleSelect={handleRoleSelect} /> {/* Pass the handler */}
             </div>
           </>
         )}

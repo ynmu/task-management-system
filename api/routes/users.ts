@@ -68,11 +68,19 @@ router.post('/signup', async (req, res) => {
         roleId,
         password: hashedPassword,
       },
+      include: {
+        role: true, // This will include the related role data
+      },
     });
-    res.status(201).json({ id: newUser.id,
+    
+    // Return the response with roleName
+    res.status(201).json({
+      id: newUser.id,
       userName: newUser.userName,
       employeeNumber: newUser.employeeNumber,
-      roleId: newUser.roleId });
+      roleId: newUser.roleId,
+      roleName: newUser.role?.roleName
+    });
   } catch (error) {
     res.status(500).json({ error: `Failed to create user: ${error}` });
   }
@@ -86,6 +94,9 @@ router.post('/login', async (req: Request, res: Response) => {
       where: {
         userName,
       },
+      include: {
+        role: true, // Include the related role data
+      },
     });
     if (!user) {
       res.status(404).json({ error: 'User not found' });
@@ -96,7 +107,14 @@ router.post('/login', async (req: Request, res: Response) => {
       res.status(401).json({ error: 'Invalid password' });
       return;
     }
-    res.status(200).json({ id: user.id, userName: user.userName, employeeNumber: user.employeeNumber, roleId: user.roleId });
+    
+    res.status(200).json({
+      id: user.id,
+      userName: user.userName,
+      employeeNumber: user.employeeNumber,
+      roleId: user.roleId,
+      roleName: user.role?.roleName
+    });
   } catch (error) {
     res.status(500).json({ error: `Failed to login: ${error}` });
   }
@@ -105,18 +123,25 @@ router.post('/login', async (req: Request, res: Response) => {
 // Get all Users
 router.get('/all', async (req: Request, res: Response) => {
   try {
-    const users = await prisma.user.findMany();
+    const users = await prisma.user.findMany({
+      include: {
+        role: true,
+      },
+    });
+
     res.status(200).json(
       users.map((user) => ({
         id: user.id,
         userName: user.userName,
         employeeNumber: user.employeeNumber,
         roleId: user.roleId,
+        roleName: user.role?.roleName
       })),
     );
   } catch (error) {
     res.status(500).json({ error: `Failed to fetch users: ${error}` });
   }
 });
+
 
 export default router;
