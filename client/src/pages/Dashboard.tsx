@@ -124,7 +124,7 @@ const Dashboard: React.FC = () => {
               </div>
             </div>
             <button onClick={exportToCSV} className="export-csv-button">
-              Export Ongoing Jobs to CSV
+              Export Jobs to CSV
             </button>
           </section>
         </main>

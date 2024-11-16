@@ -78,3 +78,18 @@
 #ongoing-jobs-name {
   transform: translateX(40px);
 }
+
+.export-csv-button {
+  background-color: white;
+  color: black;
+  border: 1px solid black;
+  cursor: pointer;
+  margin-top: 30px;
+  font-size: 14px;
+  padding: 10px;
+}
+
+.export-csv-button:hover {
+  background-color: black;
+  color: white;
+}

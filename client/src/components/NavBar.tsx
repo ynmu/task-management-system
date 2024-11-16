@@ -11,12 +11,6 @@ const Navbar: React.FC = () => {
     <nav className="navbar">
       <h1 className="navbar-title">BC Cancer Event Management</h1>
       <div className="navbar-links">
-        {/* Link to Export List Page */}
-        {isAuthenticated && (
-          <Link to="/export-list" className="navbar-link">
-            Export List
-          </Link>
-        )}
 
         {/* Back to Dashboard link */}
         {location.pathname !== '/' && isAuthenticated && (
