@@ -72,7 +72,11 @@ const Dashboard: React.FC = () => {
               Add Event
           </button>
           <button className="dashboard-button">Edit Event</button>
-          <button className="dashboard-button">View Events</button>
+          <button
+            className="dashboard-button"
+            onClick={() => window.location.href = '/view-event'}>
+            View Events
+          </button>
           <button className="dashboard-button">Users</button>
         </aside>
         <main className="dashboard-main">
