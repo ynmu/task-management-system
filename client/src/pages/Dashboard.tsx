@@ -6,8 +6,8 @@ import './Dashboard.css';
 import UserInfo from '../components/UserInfo';
 import profilePic from '../assets/profile-test-avatar.png'; // Importing the profile picture
 import './Pages.css';
-import AuthPage from './AuthPage';
 import { API_BASE_URL } from '../config';
+import SideBar from '../components/SideBar';
 
 interface Job {
   id: string;
@@ -16,7 +16,7 @@ interface Job {
 }
 
 const Dashboard: React.FC = () => {
-  const { user, isAuthenticated } = useAuth();
+  const { user } = useAuth();
   const [ongoingJobs, setOngoingJobs] = useState<Job[]>([]);
 
   useEffect(() => {
@@ -65,20 +65,7 @@ const Dashboard: React.FC = () => {
         <h1>Dashboard</h1>
       </header>
       <div className="dashboard-container">
-        <aside className="dashboard-sidebar">
-          <button
-            className="dashboard-button"
-            onClick={() => window.location.href = '/add-event'}>
-              Add Event
-          </button>
-          <button className="dashboard-button">Edit Event</button>
-          <button
-            className="dashboard-button"
-            onClick={() => window.location.href = '/view-event'}>
-            View Events
-          </button>
-          <button className="dashboard-button">Users</button>
-        </aside>
+        <SideBar />
         <main className="dashboard-main">
           <UserInfo
             role={user?.roleName || 'N/A'}
