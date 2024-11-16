@@ -1,4 +1,3 @@
-// src/pages/Dashboard.tsx
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
@@ -7,6 +6,7 @@ import UserInfo from '../components/UserInfo';
 import profilePic from '../assets/profile-test-avatar.png'; // Importing the profile picture
 import './Pages.css';
 import { API_BASE_URL } from '../config';
+import { saveAs } from 'file-saver'; // Import file-saver
 import SideBar from '../components/SideBar';
 
 interface Job {
@@ -59,6 +59,24 @@ const Dashboard: React.FC = () => {
     }
   };
 
+  const exportToCSV = () => {
+    const csvData = ongoingJobs.map((job) => ({
+      ID: job.id,
+      Name: job.name,
+      'Progress Status': job.progress ? 'In Progress' : 'Completed',
+    }));
+
+    const csvHeader = ['ID', 'Name', 'Progress Status'];
+
+    let csvContent = csvHeader.join(',') + '\n';
+    csvData.forEach((row) => {
+      csvContent += Object.values(row).join(',') + '\n';
+    });
+
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    saveAs(blob, 'ongoing-jobs.csv');
+  };
+
   return (
     <div className="dashboard">
       <header className="page-header">
@@ -96,12 +114,14 @@ const Dashboard: React.FC = () => {
                 ))}
               </div>
             </div>
+            <button onClick={exportToCSV} className="export-csv-button">
+              Export Jobs to CSV
+            </button>
           </section>
         </main>
       </div>
     </div>
   );
 };
-
 
 export default Dashboard;

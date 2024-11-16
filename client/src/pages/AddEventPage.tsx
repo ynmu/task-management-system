@@ -1,5 +1,7 @@
 import AddEvent from "../components/AddEvent";
 
+
+
 const AddEventPage: React.FC = () => {
     return (
         <div>
@@ -12,3 +14,14 @@ const AddEventPage: React.FC = () => {
 };
 
 export default AddEventPage;
+// AddEventPage.tsx
+export type Participant = {
+    id: string;
+    firstName: string;
+    lastName: string;
+    organizationName: string;
+    totalDonations: number;
+    addressLine1: string;
+    addressLine2: string;
+    city: string;
+  };

@@ -5,6 +5,13 @@ import './GeneralStyles.css';
 import { API_BASE_URL } from '../config';
 import { useAuth }  from '../context/AuthContext';
 import axios from 'axios';
+import { saveAs } from 'file-saver';
+
+// Function to download an Excel file
+const downloadFile = (data: any) => {
+  const blob = new Blob([data], { type: 'application/octet-stream' });
+  saveAs(blob, 'exported-file.xlsx');
+};
 
 const BC_CANCER_API = 'https://bc-cancer-faux.onrender.com/event';
 
@@ -12,10 +19,10 @@ type Participant = {
     id: number;
     firstName: string;
     lastName: string;
-    organizationName: string;
+    organizationName?: string;  // Make optional if data might be missing
     totalDonations: number;
     addressLine1: string;
-    addressLine2: string;
+    addressLine2?: string;
     city: string;
     pmm: string;
     smm: string;
@@ -29,21 +36,21 @@ const AddEvent: React.FC = () => {
     const { user } = useAuth();
 
     // Data transformation
-    const transformData = (data: (string | number)[][]): Participant[] => {
+    const transformData = (data: any[]): Participant[] => {
         return data.map((item, index) => ({
-            id: index + 1,
-            firstName: String(item[5] || ''),
-            lastName: String(item[7] || ''),
-            organizationName: String(item[8] || ''),
-            totalDonations: Number(item[9] || 0),
-            addressLine1: String(item[18] || ''),
-            addressLine2: String(item[19] || ''),
-            city: String(item[20] || ''),
-            pmm: String(item[0] || ''),
-            smm: String(item[1] || ''),
-            vmm: String(item[2] || ''),
+          id: index + 1,
+          firstName: String(item[5] || ''),
+          lastName: String(item[7] || ''),
+          organizationName: String(item[8] || ''),
+          totalDonations: Number(item[9] || 0),
+          addressLine1: String(item[18] || ''),
+          addressLine2: String(item[19] || ''),
+          city: String(item[20] || ''),
+          pmm: String(item[0] || ''),
+          smm: String(item[1] || ''),
+          vmm: String(item[2] || ''),
         }));
-    };
+      };
 
     // Fetch participants
     const fetchData = async (city: string) => {
@@ -66,8 +73,8 @@ const AddEvent: React.FC = () => {
         try {
             const values = await form.validateFields(['location', 'size']);
             await fetchData(values.location);
-        } catch {
-            message.error('Failed to fetch the participants list');
+        } catch (error) {
+            message.error('Failed to fetch the participants list. Please ensure the form is valid.');
         }
     };
 
@@ -117,14 +124,12 @@ const AddEvent: React.FC = () => {
 
     // Handle saving the event and attendees
     const handleSaveEvent = async () => {
+        if (selectedParticipants.length === 0) {
+            message.error('No participants selected.');
+            return;
+        }
+    
         try {
-            if (selectedParticipants.length === 0) {
-                message.error('No participants have been selected.');
-                return;
-            }
-
-            console.log('Selected Participants:', selectedParticipants);
-
             const eventDetails = await form.validateFields();
             const response = await fetch(`${API_BASE_URL}/events`, {
                 method: 'POST',
@@ -133,27 +138,26 @@ const AddEvent: React.FC = () => {
                 },
                 body: JSON.stringify({
                     ...eventDetails,
-                    roleId: user?.roleId || null
+                    roleId: user?.roleId || null,
                 }),
             });
-            console.log('Event Details:', eventDetails, 'Role ID:', user?.roleId);
-
-            if (response.ok) {
-                const newEvent = await response.json();
-                message.success('Event has been saved successfully');
-                // Save selected attendees associated with the new event
-                const attendeesToSave = participants.filter(p => selectedParticipants.includes(p.id));
-                console.log('Attendees to Save:', attendeesToSave);
-                await saveAttendees(attendeesToSave, newEvent.id);
-                form.resetFields();
-                setSelectedParticipants([]);
-                setParticipants([]);
+    
+            if (!response.ok) throw new Error('Failed to save event.');
+    
+            const newEvent = await response.json();
+            message.success('Event saved successfully');
+            const attendeesToSave = participants.filter(p => selectedParticipants.includes(p.id));
+            await saveAttendees(attendeesToSave, newEvent.id);
+            form.resetFields();
+            setSelectedParticipants([]);
+            setParticipants([]);
+        } catch (error: unknown) {
+            if (error instanceof Error) {
+              message.error(`Error saving the event: ${error.message}`);
             } else {
-                throw new Error('Response not OK');
+              message.error('An unknown error occurred');
             }
-        } catch (error: any) {
-            message.error(`Error saving the event: ${error.message}`);
-        }
+          }
     };
 
     const handleCancel = () => {
