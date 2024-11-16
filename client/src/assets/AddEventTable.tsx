@@ -59,6 +59,66 @@ export const columns = [
     }
 ];
 
+export const attendeeColumns = [
+    {
+        title: 'ID',
+        dataIndex: 'id',
+        key: 'id',
+    },
+    {
+        title: 'First Name',
+        dataIndex: 'firstName',
+        key: 'firstName',
+    },
+    { 
+        title: 'Last Name',
+        dataIndex: 'lastName',
+        key: 'lastName',
+
+    },
+    {
+        title:"Organization Name",
+        dataIndex: 'organization',
+        key: 'organization',
+    },
+    {
+        title:"Total Donations",
+        dataIndex: 'totalDonations',
+        key: 'totalDonations',
+    },
+    {
+        title: 'Address Line 1',
+        dataIndex: 'address1',
+        key: 'address1',
+    },
+    {
+        title: 'Address Line 2',
+        dataIndex: 'address2',
+        key: 'address2',
+    },
+    {
+        title: 'City',
+        dataIndex: 'city',
+        key: 'city',
+    },
+    {
+        title: 'pmm',
+        dataIndex: 'pmm',
+        key: 'pmm',
+    },
+    {
+        title:'smm',
+        dataIndex: 'smm',
+        key: 'smm',
+    },
+    {
+        title: 'vmm',
+        dataIndex: 'vmm',
+        key: 'vmm',
+    }
+];
+
+
 export const cityNames = [
     "Victoria",
     "Nanaimo",

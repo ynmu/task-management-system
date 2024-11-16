@@ -3,7 +3,7 @@ import axios from 'axios';
 import { Form, Input, Button, DatePicker, Select, InputNumber, message, Row, Col, Table } from 'antd';
 import './GeneralStyles.css';
 import { API_BASE_URL } from '../config';
-import { columns} from "../assets/AddEventTable";
+import { attendeeColumns } from "../assets/AddEventTable";
 import { useAuth } from '../context/AuthContext';
 
 // Event Type
@@ -89,7 +89,7 @@ return (
                 </Row>
             <Table
                 dataSource={participants}
-                columns={columns}
+                columns={attendeeColumns}
                 pagination={{ pageSize: 10 }}>
             </Table>
         </>

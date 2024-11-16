@@ -50,7 +50,6 @@ router.get('/:eventId', async (req: Request, res: Response) => {
             include: { attendees: true }, // Include the related attendees
         });
 
-        console.log('GET /attendees/:eventId - eventWithAttendees:', eventWithAttendees);
 
         if (!eventWithAttendees) {
             res.status(404).json({ message: 'Event not found' });
@@ -62,6 +61,7 @@ router.get('/:eventId', async (req: Request, res: Response) => {
             return;
         }
         
+        console.log('GET /attendees/:eventId - attendees:', eventWithAttendees.attendees);
         res.status(200).json(eventWithAttendees.attendees);
     } catch (error) {
         console.error('Error fetching attendees:', error);
