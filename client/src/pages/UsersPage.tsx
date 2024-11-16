@@ -63,7 +63,7 @@ const UsersPage: React.FC = () => {
                   usersByRole[role.id].map((user) => (
                     <div key={user.id} className="role-user-item">
                       <span>{user.userName}</span>
-                      <span>{String(user.employeeNumber).padStart(3, '0')}</span>
+                      <span>{String(user.employeeNumber).padStart(6, '0')}</span>
                     </div>
                   ))
                 ) : (
