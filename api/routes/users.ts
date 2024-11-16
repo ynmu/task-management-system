@@ -16,6 +16,7 @@ router.post('/roles', async (req, res) => {
       },
     });
     if (roleExists) {
+      console.log('POST /users/roles - Role already exists');
       res.status(400).json({ error: 'Role already exists' });
       return;
     }
@@ -25,8 +26,10 @@ router.post('/roles', async (req, res) => {
         roleName,
       },
     });
+    console.log(`POST /users/roles created: ${JSON.stringify(newRole)}`);
     res.status(201).json(newRole);
   } catch (error) {
+    console.log(`POST /users/roles failed: ${error}`);
     res.status(500).json({ error: `Failed to create role: ${error}` });
   }
 });
@@ -35,8 +38,10 @@ router.post('/roles', async (req, res) => {
 router.get('/roles', async (req, res) => {
   try {
     const roles = await prisma.role.findMany();
+    console.log(`GET /users/roles fetched: ${roles.length} roles`);
     res.status(200).json(roles);
   } catch (error) {
+    console.log(`GET /users/roles failed: ${error}`);
     res.status(500).json({ error: `Failed to fetch roles: ${error}` });
   }
 });
@@ -53,6 +58,7 @@ router.get('/roles/:roleId', async (req, res) => {
         role: true,
       },
     });
+    console.log(`GET /users/roles/${roleId} fetched: ${users.length} users`);
     res.status(200).json(
       users.map((user) => ({
         id: user.id,
@@ -63,6 +69,7 @@ router.get('/roles/:roleId', async (req, res) => {
       }))
     );
   } catch (error) {
+    console.log(`GET /users/roles/${roleId} failed: ${error}`);
     res.status(500).json({ error: `Failed to fetch users: ${error}` });
   }
 });
@@ -82,6 +89,7 @@ router.post('/signup', async (req, res) => {
       },
     });
     if (userExists) {
+      console.log('POST /users/signup - Username or employee number already exists');
       res.status(400).json({ error: 'Username or employee number already exists' });
       return;
     }
@@ -100,6 +108,7 @@ router.post('/signup', async (req, res) => {
     });
     
     // Return the response with roleName
+    console.log(`POST /users/signup created: ${newUser.userName}`);
     res.status(201).json({
       id: newUser.id,
       userName: newUser.userName,
@@ -108,6 +117,7 @@ router.post('/signup', async (req, res) => {
       roleName: newUser.role?.roleName
     });
   } catch (error) {
+    console.log(`POST /users/signup failed: ${error}`);
     res.status(500).json({ error: `Failed to create user: ${error}` });
   }
 });
@@ -121,15 +131,17 @@ router.post('/login', async (req: Request, res: Response) => {
         userName,
       },
       include: {
-        role: true, // Include the related role data
+        role: true,
       },
     });
     if (!user) {
+      console.log('POST /users/login - User not found');
       res.status(404).json({ error: 'User not found' });
       return;
     }
     const passwordMatch = await bcrypt.compare(password, user.password);
     if (!passwordMatch) {
+      console.log('POST /users/login - Invalid password');
       res.status(401).json({ error: 'Invalid password' });
       return;
     }
@@ -142,6 +154,7 @@ router.post('/login', async (req: Request, res: Response) => {
       roleName: user.role?.roleName
     });
   } catch (error) {
+    console.log(`POST /users/login failed: ${error}`);
     res.status(500).json({ error: `Failed to login: ${error}` });
   }
 });
@@ -165,6 +178,7 @@ router.get('/all', async (req: Request, res: Response) => {
       })),
     );
   } catch (error) {
+    console.log(`GET /users/all failed: ${error}`);
     res.status(500).json({ error: `Failed to fetch users: ${error}` });
   }
 });

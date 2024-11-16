@@ -20,8 +20,10 @@ router.post('/', async (req: Request, res: Response) => {
         status: false
       },
     });
+    console.log(`POST /events created: ${JSON.stringify(newEvent)}`);
     res.status(201).json(newEvent);
   } catch (error) {
+    console.log(`POST /events failed: ${error}`);
     res.status(500).json({ error: `Failed to create event: ${error}` });
   }
 });
@@ -30,8 +32,10 @@ router.post('/', async (req: Request, res: Response) => {
 router.get('/', async (req: Request, res: Response) => {
   try {
     const events = await prisma.event.findMany();
+    console.log(`GET /events fetched: ${events.length} events`);
     res.status(200).json(events);
   } catch (error) {
+    console.log(`GET /events failed: ${error}`);
     res.status(500).json({ error: `Failed to fetch events: ${error}` });
   }
 });
@@ -44,11 +48,14 @@ router.get('/:id', async (req: Request, res: Response) => {
       where: { id: parseInt(id) },
     });
     if (event) {
+      console.log(`GET /events/${id} fetched: ${JSON.stringify(event)}`);
       res.status(200).json(event);
     } else {
+      console.log(`GET /events/${id} failed: Event not found`);
       res.status(404).json({ error: 'Event not found' });
     }
   } catch (error) {
+    console.log(`GET /events/${id} failed: ${error}`);
     res.status(500).json({ error: `Failed to fetch event: ${error}` });
   }
 });
@@ -69,10 +76,12 @@ router.get('/role/:roleId', async (req: Request, res: Response) => {
     });
 
     if (!roleWithEvents) {
+      console.log(`GET /events/role/${roleId} failed: Role not found`);
       res.status(404).json({ message: 'Role not found' });
       return;
     }
 
+    console.log(`GET /events/role/${roleId} fetched: ${roleWithEvents.sharedEvents.length} events`);
     res.status(200).json(roleWithEvents.sharedEvents);
   } catch (error) {
     console.error('Error fetching events for role:', error);
@@ -100,10 +109,10 @@ router.put('/:id', async (req: Request, res: Response) => {
       where: { id: parseInt(id) },
       data, // Use the constructed data object
     });
-    console.log(`PUT /api/events/${id} updated: ${JSON.stringify(updatedEvent)}`);
+    console.log(`PUT /events/${id} updated: ${JSON.stringify(updatedEvent)}`);
     res.status(200).json(updatedEvent);
   } catch (error) {
-    console.log(`PUT /api/events/${id} failed: ${error}`);
+    console.log(`PUT /events/${id} failed: ${error}`);
     res.status(500).json({ error: `Failed to update event: ${error}` });
   }
 });
@@ -116,8 +125,10 @@ router.delete('/:id', async (req: Request, res: Response) => {
     await prisma.event.delete({
       where: { id: parseInt(id) },
     });
+    console.log(`DELETE /events/${id} deleted`);
     res.status(204).json({ message: 'Event deleted' });
   } catch (error) {
+    console.log(`DELETE /events/${id} failed: ${error}`);
     res.status(500).json({ error: `Failed to delete event: ${error}` });
   }
 });

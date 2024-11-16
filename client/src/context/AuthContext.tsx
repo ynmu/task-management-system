@@ -39,7 +39,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         setIsAuthenticated(false);
       }
       setLoading(false); // Set loading to false after the delay
-    }, 500);
+    }, 350);
   }, []);
   
 

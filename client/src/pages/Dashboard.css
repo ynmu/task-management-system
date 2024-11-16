@@ -5,31 +5,6 @@
   gap: 30px;
 }
 
-.dashboard-sidebar {
-  padding: 10px;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.dashboard-button {
-  padding: 10px;
-  margin: 5px 0;
-  font-size: 16px;
-  width: 160px;
-  height: 50px;
-  background-color: white;
-  color: black;
-  border: 1px solid black;
-  cursor: pointer;
-  border-radius: 2px;
-  box-shadow: 3px 3px 0 rgba(0, 0, 0);
-}
-
-.dashboard-button:hover {
-  background-color: black;
-  color: white;
-}
 
 .dashboard-main {
   padding: 20px;

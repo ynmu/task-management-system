@@ -1,0 +1,42 @@
+.users-page-container {
+    display: flex;
+    gap: 30px;
+}
+
+
+.roles-table-section {
+    font-size: 18px;
+    margin: 20px auto;
+    width: 50%;
+}
+
+
+.role-table {
+    display: flex;
+    flex-direction: column;
+    margin-top: 50px;
+}
+
+.role-headers,
+.role-user-item,
+.no-users {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px;
+    border: 1px solid #878787;
+}
+
+.role-headers {
+    font-weight: bold;
+}
+
+
+.role-header {
+    font-size: 20px;
+    background-color: black;
+    height: 40px;
+    color: white;
+    align-items: center;
+    justify-content: center;
+    display: flex;
+}
