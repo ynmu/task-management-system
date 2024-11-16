@@ -34,7 +34,7 @@ const RoleDropdown: React.FC<RoleDropdownProps> = ({ onRoleSelect }) => {
         };
 
         fetchRoles();
-    }, [onRoleSelect]);
+    }, [onRoleSelect, selectedRoleId]);
 
     const handleRoleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
         const selectedRoleId = Number(e.target.value);
