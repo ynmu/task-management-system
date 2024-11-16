@@ -17,7 +17,7 @@ router.post('/', async (req: Request, res: Response) => {
         const createdAttendees = await prisma.attendee.createMany({
             data: attendees,
         });
-        console.log('POST /attendees - createdAttendees:', createdAttendees);
+        console.log(`POST /attendees - created ${createdAttendees.count} attendees`);
         res.status(201).json({ message: 'Attendees created successfully', count: createdAttendees.count });
     } catch (error) {
         console.error('Error creating attendees:', error);
@@ -30,7 +30,7 @@ router.post('/', async (req: Request, res: Response) => {
 router.get('/', async (req: Request, res: Response) => {
     try {
         const attendees = await prisma.attendee.findMany();
-        console.log('GET /attendees - attendees:', attendees);
+        console.log(`GET /attendees - fetched ${attendees.length} attendees`);
         res.status(200).json(attendees);
     } catch (error) {
         console.error('Error fetching attendees:', error);
