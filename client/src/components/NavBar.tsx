@@ -10,11 +10,22 @@ const Navbar: React.FC = () => {
   return (
     <nav className="navbar">
       <h1 className="navbar-title">BC Cancer Event Management</h1>
-      {location.pathname !== '/' && isAuthenticated && (
-        <Link to="/" className="navbar-back-button">
-          <div>Back to Dashboard</div>
-        </Link>
-      )}
+      <div className="navbar-links">
+        {/* Link to Export List Page */}
+        {isAuthenticated && (
+          <Link to="/export-list" className="navbar-link">
+            Export List
+          </Link>
+        )}
+
+        {/* Back to Dashboard link */}
+        {location.pathname !== '/' && isAuthenticated && (
+          <Link to="/" className="navbar-back-button">
+            <div>Back to Dashboard</div>
+          </Link>
+        )}
+      </div>
+
       <div className="navbar-content">
         {user ? (
           <>
