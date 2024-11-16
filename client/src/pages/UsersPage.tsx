@@ -3,6 +3,7 @@ import { API_BASE_URL } from '../config';
 import './UsersPage.css';
 import './Pages.css';
 import SideBar from '../components/SideBar';
+import { TbUserQuestion } from "react-icons/tb";
 
 interface Role {
   id: number;
@@ -46,7 +47,7 @@ const UsersPage: React.FC = () => {
   return (
     <div className="users-page">
       <header className="page-header">
-        <h1>Dashboard</h1>
+        <h1>Active Users</h1>
       </header>
       <div className="users-page-container">
         <SideBar />
@@ -67,7 +68,10 @@ const UsersPage: React.FC = () => {
                     </div>
                   ))
                 ) : (
-                  <div className="no-users">No users assigned to this role.</div>
+                  <div className="no-users">
+                    <TbUserQuestion size={30} />
+                    <span>No users assigned to this role.</span>
+                  </div>
                 )}
               </div>
             </div>

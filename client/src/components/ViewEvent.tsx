@@ -4,6 +4,7 @@ import { Form, Input, Button, DatePicker, Select, InputNumber, message, Row, Col
 import './GeneralStyles.css';
 import { API_BASE_URL } from '../config';
 import { columns} from "../assets/AddEventTable";
+import { useAuth } from '../context/AuthContext';
 
 // Event Type
 export type Event = {
@@ -19,15 +20,18 @@ const ViewEvent: React.FC = () => {
     const [events, setEvents] = useState<Event[]>([]);
     const [participants, setParticipants] = useState([]);
     const [selectedEvent, setSelectedEvent] = useState<Event>();
+    const { user } = useAuth();
 
     useEffect(() => {
-        fetchEvents();
+        if (user) {
+            fetchEvents(user.roleId);
+        }
     }, []);
 
 {/* fetch event id and name from backend */}
-const fetchEvents = async () => {
+const fetchEvents = async (roleId: number) => {
     try {
-        const response = await axios.get<Event[]>(`${API_BASE_URL}/events`);
+        const response = await axios.get<Event[]>(`${API_BASE_URL}/events/role/${roleId}`);
         setEvents(response.data);
     }
     catch (error) {
