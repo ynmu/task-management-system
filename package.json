@@ -1,0 +1,11 @@
+{
+    "scripts": {
+      "install-all": "npm-run-all --parallel install-api install-client",
+      "install-api": "cd api && npm install",
+      "install-client": "cd client && npm install",
+      "start-api": "cd api && ts-node index.ts",
+      "start-client": "cd client && npm start",
+      "start-all": "concurrently \"npm run start-api\" \"npm run start-client\""
+    }
+  }
+  
