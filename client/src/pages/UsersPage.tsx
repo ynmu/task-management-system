@@ -4,6 +4,7 @@ import './UsersPage.css';
 import './Pages.css';
 import SideBar from '../components/SideBar';
 import { TbUserQuestion } from "react-icons/tb";
+import { useAuth } from '../context/AuthContext';
 
 interface Role {
   id: number;
@@ -21,6 +22,7 @@ interface User {
 const UsersPage: React.FC = () => {
   const [roles, setRoles] = useState<Role[]>([]);
   const [usersByRole, setUsersByRole] = useState<Record<number, User[]>>({});
+  const { user: currentUser } = useAuth();
 
   useEffect(() => {
     // Fetch all roles
@@ -63,7 +65,10 @@ const UsersPage: React.FC = () => {
                 {usersByRole[role.id] && usersByRole[role.id].length > 0 ? (
                   usersByRole[role.id].map((user) => (
                     <div key={user.id} className="role-user-item">
-                      <span>{user.userName}</span>
+                      <span className='role-user-item-name'>
+                        {user.userName}
+                        {user.id === currentUser?.id && <div className="current-user-tag">You</div>}
+                      </span>
                       <span>{String(user.employeeNumber).padStart(6, '0')}</span>
                     </div>
                   ))
