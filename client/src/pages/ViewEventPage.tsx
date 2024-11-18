@@ -1,14 +1,14 @@
-import ViewEvent from '../components/ViewEvent';
+import ViewEvents from '../components/EventCardList';
 
-const ViewEventPage: React.FC = () => {
+const ViewEventsPage: React.FC = () => {
     return (
         <div>
             <header className="page-header">
-                <h1>View Event</h1>
+                <h1>View Events</h1>
             </header>
-            <ViewEvent />
+            <ViewEvents />
         </div>
     );
 };
 
-export default ViewEventPage;
+export default ViewEventsPage;

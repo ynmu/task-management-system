@@ -1,0 +1,60 @@
+.event-card {
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    padding: 15px 25px;
+    width: 260px;
+    height: 320px;
+    text-align: left;
+    margin: 16px;
+    position: relative;
+}
+
+.event-card:hover {
+    box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.3);
+    transition: box-shadow 0.3s;
+}
+
+.event-card__image {
+    width: 100%;
+    height: auto;
+    border-radius: 4px; /* Optional: Adds rounded corners */
+    object-fit: cover; /* Ensures the image covers the area without distortion */
+}
+
+.event-card__name {
+    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+    font-size: 1.2em;
+    margin: 12px 0;
+}
+
+.event-card__info {
+    font-size: 0.9em;
+    margin: 4px 0;
+}
+
+.event-card__buttons {
+    margin-top: 12px;
+    display: flex;
+    justify-content: center;
+}
+
+.event-card__button {
+    padding: 0;
+    cursor: pointer;
+    background-color: black;
+    color: white;
+    transition: background-color 0.3s;
+    border: none;
+    position: absolute;
+    bottom: 20px;
+    right: 30px;
+    border-radius: 50%;
+    width: 35px;
+    height: 35px;
+}
+
+.event-card__button:hover {
+    background-color: white;
+    color: black;
+    border: 2px solid black;
+}

@@ -81,7 +81,7 @@ router.get('/role/:roleId', async (req: Request, res: Response) => {
       return;
     }
 
-    console.log(`GET /events/role/${roleId} fetched: ${roleWithEvents.sharedEvents.length} events`);
+    console.log(`GET /events/role/${roleId} fetchedEvents`, roleWithEvents.sharedEvents);
     res.status(200).json(roleWithEvents.sharedEvents);
   } catch (error) {
     console.error('Error fetching events for role:', error);

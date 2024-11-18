@@ -1,0 +1,10 @@
+.event-card-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    justify-content: left;
+    align-items: center;
+    width: 90%;
+    margin: 0 auto;
+  }
+  
