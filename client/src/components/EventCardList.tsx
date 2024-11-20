@@ -44,6 +44,7 @@ const EventCardList: React.FC = () => {
                     date={event.date}
                     location={event.location}
                     size={event.size}
+                    id={event.id}
                 />
             ))}
         </div>
