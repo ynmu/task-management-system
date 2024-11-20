@@ -9,7 +9,11 @@ const SideBar: React.FC = () => {
                 onClick={() => window.location.href = '/add-event'}>
                 Add Event
             </button>
-            <button className="sidebar-button">Edit Event</button>
+            <button 
+                className="sidebar-button"
+                onClick={() => window.location.href = '/edit-event'}>
+                Edit Event
+            </button>
             <button
                 className="sidebar-button"
                 onClick={() => window.location.href = '/view-event'}>
