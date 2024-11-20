@@ -8,7 +8,7 @@ Create a `.env` file in the `` directory with the following content (update the 
 DATABASE_URL="postgresql://cs5500_group4_bccancer_user:xxxx@xxxx.oregon-postgres.render.com/cs5500_group4_bccancer"
 ```
 
-
+Go to api folder and run the following commands:
 # Install Dependencies
 
 Run the following command to install all required dependencies:
@@ -45,7 +45,7 @@ npx prisma migrate deploy
 Start the server using the following command:
     
 ```bash
-ts-node api/index.ts
+ts-node index.ts
 ```
 
 
