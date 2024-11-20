@@ -29,12 +29,12 @@ export const columns = [
     },
     {
         title: 'Address Line 1',
-        dataIndex: 'address1',
+        dataIndex: 'addressLine1',
         key: 'addressLine1',
     },
     {
         title: 'Address Line 2',
-        dataIndex: 'address2',
+        dataIndex: 'addressLine2',
         key: 'addressLine2',
     },
     {
