@@ -25,7 +25,6 @@ router.post('/', async (req: Request, res: Response) => {
     }
 });
 
-
 // Get all attendees
 router.get('/', async (req: Request, res: Response) => {
     try {
@@ -65,6 +64,42 @@ router.get('/:eventId', async (req: Request, res: Response) => {
         res.status(200).json(eventWithAttendees.attendees);
     } catch (error) {
         console.error('Error fetching attendees:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
+// delete attendee(s) for an event using the Event model
+router.delete('/:eventId', async (req: Request, res: Response) => {
+    const { eventId } = req.params;
+
+    try {
+        // Delete all attendees for the event
+        const deletedAttendees = await prisma.attendee.deleteMany({
+            where: { eventId: parseInt(eventId) },
+        });
+
+        console.log(`DELETE /attendees/:eventId - deleted ${deletedAttendees.count} attendees`);
+        res.status(200).json({ message: 'Attendees deleted successfully', count: deletedAttendees.count });
+    } catch (error) {
+        console.error('Error deleting attendees:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
+// delete one attendee for an event using the Event model
+router.delete('/:eventId/:attendeeId', async (req: Request, res: Response) => {
+    const { eventId, attendeeId } = req.params;
+
+    try {
+        // Delete the attendee
+        const deletedAttendee = await prisma.attendee.delete({
+            where: { id: parseInt(attendeeId) },
+        });
+
+        console.log(`DELETE /attendees/:eventId/:attendeeId - deleted attendee with ID ${attendeeId}`);
+        res.status(200).json({ message: 'Attendee deleted successfully', attendee: deletedAttendee });
+    } catch (error) {
+        console.error('Error deleting attendee:', error);
         res.status(500).json({ error: 'Internal server error' });
     }
 });
