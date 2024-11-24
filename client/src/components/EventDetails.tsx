@@ -3,7 +3,6 @@ import { Row, Col, Table } from 'antd';
 import { attendeeColumns} from "../assets/AddEventTable";
 import './GeneralStyles.css';
 import { API_BASE_URL } from '../config';
-import { useAuth }  from '../context/AuthContext';
 import axios from 'axios';
 import { useParams } from 'react-router-dom';
 

@@ -1,4 +1,4 @@
-import EditEvent from "../components/EditEvent";
+import EditEvent from "../components/EventDetails";
 
 const EditEventPage: React.FC = () => {
 
