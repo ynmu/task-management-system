@@ -1,4 +1,4 @@
-import { Router, Request, Response } from 'express';
+import { Router, Request, Response, RequestHandler } from 'express';
 import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
@@ -68,23 +68,59 @@ router.get('/:eventId', async (req: Request, res: Response) => {
     }
 });
 
-// delete attendee(s) for an event using the Event model
-router.delete('/:eventId', async (req: Request, res: Response) => {
+// Update attendee(s) for an event using the Event model
+router.put('/:eventId', async (req: Request, res: Response) => {
     const { eventId } = req.params;
+    const attendees = req.body;
+
+    if (!Array.isArray(attendees) || attendees.length === 0) {
+        res.status(400).json({ error: 'Invalid or missing attendees data' });
+        return;
+    }
 
     try {
-        // Delete all attendees for the event
-        const deletedAttendees = await prisma.attendee.deleteMany({
+        // Update the attendees
+        const updatedAttendees = await prisma.attendee.updateMany({
             where: { eventId: parseInt(eventId) },
+            data: attendees,
         });
 
-        console.log(`DELETE /attendees/:eventId - deleted ${deletedAttendees.count} attendees`);
+        console.log(`PUT /attendees/${eventId} - updated ${updatedAttendees.count} attendees`);
+        res.status(200).json({ message: 'Attendees updated successfully', count: updatedAttendees.count });
+    } catch (error) {
+        console.error('Error updating attendees:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
+// delete attendee(s) for an event using the Event model
+const deleteAttendeesHandler: RequestHandler = async (req, res): Promise<void> => {
+    const { eventId } = req.params;
+    const { attendeeIds } = req.body; // Array of attendee IDs from the request body
+
+    if (!attendeeIds || attendeeIds.length === 0) {
+        res.status(400).json({ error: 'No attendee IDs provided' });
+        return;
+    }
+
+    try {
+        const deletedAttendees = await prisma.attendee.deleteMany({
+            where: {
+                id: { in: attendeeIds },
+                eventId: parseInt(eventId, 10), // Parse eventId as a base-10 (decimal) number
+            },
+        });
+
+        console.log(`DELETE /attendees/${eventId} - deleted ${deletedAttendees.count} attendees`);
         res.status(200).json({ message: 'Attendees deleted successfully', count: deletedAttendees.count });
     } catch (error) {
         console.error('Error deleting attendees:', error);
         res.status(500).json({ error: 'Internal server error' });
     }
-});
+};
+
+// Attach the handler to the router
+router.delete('/:eventId', deleteAttendeesHandler);
 
 // delete one attendee for an event using the Event model
 router.delete('/:eventId/:attendeeId', async (req: Request, res: Response) => {
