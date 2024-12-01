@@ -2,11 +2,11 @@ import React, { useEffect, useState } from "react";
 import { useAuth }  from '../context/AuthContext';
 import { Form, Input, Button, DatePicker, Select, InputNumber, message, Row, Col, Table } from 'antd';
 import { columns, cityNames, topicNames, attendeeColumns} from "../assets/AddEventTable";
+import dayjs from 'dayjs';
 import './GeneralStyles.css';
 import { API_BASE_URL } from '../config';
 import axios from 'axios';
 import { useParams } from 'react-router-dom';
-import moment from 'moment';
 
 const BC_CANCER_API = 'https://bc-cancer-faux.onrender.com/event';
 
@@ -27,7 +27,7 @@ type Participant = {
 interface Event {
     id: string;
     name: string;
-    date: Date;
+    date: dayjs.ConfigType;
     location: string;
     size: number;
     description?: string;
@@ -98,9 +98,12 @@ const EventDetails: React.FC = () => {
     // Update attendees as part of the event
     const updateAttendees = async (attendees: Participant[], eventId: number) => {
         try {
+            // Log the attendees array to inspect its structure
+            console.log('Attendees array that is used to replace original attendees:', attendees);
+
             const requestBody = attendees.map(attendee => ({
-                firstName: attendee.firstName,
-                lastName: attendee.lastName,
+                firstName: attendee.firstName || '',
+                lastName: attendee.lastName || '',
                 organization: attendee.organizationName || null,
                 totalDonations: attendee.totalDonations,
                 address1: attendee.addressLine1 || null,
@@ -132,10 +135,10 @@ const EventDetails: React.FC = () => {
         }
     };
 
-    // Handle updating the attendees
-    const handleUpdateAttendees = async () => { 
+    // Handle updating the event details except the attendees
+    const handleUpdateEvent = async () => { 
         try {
-            const eventDetails = await form.validateFields();
+            const eventDetails = await form.validateFields(['name', 'date', 'topic', 'size', 'location', 'description']);
             const response = await fetch(`${API_BASE_URL}/events/${eventId}`, {
                 method: 'PUT',
                 headers: {
@@ -150,12 +153,9 @@ const EventDetails: React.FC = () => {
             if (!response.ok) throw new Error('Failed to save event.');
     
             const newEvent = await response.json();
+            setEvent(newEvent);
             message.success('Event updated successfully');
-            const attendeesToSave = participants.filter(p => selectedParticipants.includes(p.id));
-            await updateAttendees(attendeesToSave, newEvent.id);
-            form.resetFields();
-            setSelectedParticipants([]);
-            setParticipants([]);
+            // form.resetFields();
         } catch (error: unknown) {
             if (error instanceof Error) {
               message.error(`Error saving the event: ${error.message}`);
@@ -163,43 +163,6 @@ const EventDetails: React.FC = () => {
               message.error('An unknown error occurred');
             }
           }
-    };
-    
-
-    // Handle saving the event details without updating the attendees
-    const handleUpdateEvent = async () => { 
-        try {
-            const eventDetails = await form.validateFields();
-            const response = await fetch(`${API_BASE_URL}/events/${eventId}`, {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    ...eventDetails,
-                    roleId: user?.roleId || null,
-                }),
-            });
-    
-            if (!response.ok) throw new Error('Failed to save event.');
-    
-            const newEvent = await response.json();
-            message.success('Event updated successfully');
-            setEvent(newEvent);
-            form.resetFields();
-        } catch (error: unknown) {
-            if (error instanceof Error) {
-              message.error(`Error updating the event: ${error.message}`);
-            } else {
-              message.error('An unknown error occurred');
-            }
-          }
-    };
-
-    const handleCancel = () => {
-        form.resetFields();
-        setParticipants([]);
-        setSelectedParticipants([]);
     };
 
     // Handle deleting selected participants
@@ -255,6 +218,11 @@ const EventDetails: React.FC = () => {
                 fetchParticipates(eventId);
             }
         }, [event]);
+    
+    const handleCancel = () => {
+        form.resetFields();
+        setPossibleParticipants([]);
+    };
 
 return (
         <>
@@ -265,10 +233,11 @@ return (
                 initialValues={{
                     name: event?.name, 
                     topic: event?.topic, 
-                    date: event?.date,
+                    date: event?.date ? dayjs(event.date) : null, // Ensure date is a dayjs object
                     size: event?.size,
                     location: event?.location,
                     description: event?.description,
+                    eventId: eventId,
                 }}
             >
                 {/* Form Edit Section */}
@@ -277,7 +246,6 @@ return (
                         <Form.Item 
                             label="Event ID" 
                             name="eventId"
-                            initialValue={eventId}
                             >
                             <Input disabled />
                         </Form.Item>
@@ -297,7 +265,7 @@ return (
                             label="Event Date"
                             name="date"
                         >
-                            <DatePicker style={{ width: '100%' }} placeholder={moment(event?.date).format('YYYY-MM-DD')}/>
+                            <DatePicker style={{ width: '100%' }} />
                         </Form.Item>
                     </Col>
                     <Col span={12}>
@@ -331,7 +299,6 @@ return (
                         >
                             <Select 
                                 placeholder={event?.location}
-                                defaultValue={event?.location}
                                 >
                                 {cityNames.map(city => (
                                     <Select.Option key={city} value={city}>
@@ -343,7 +310,7 @@ return (
                     </Col>
                 </Row>
                 <Form.Item label="Event Description" name="description">
-                    <Input.TextArea placeholder={event?.description} defaultValue={event?.description}/>
+                    <Input.TextArea placeholder={event?.description} />
                 </Form.Item>
                 <Row justify="center" style={{ marginTop: 16 }}>
                     <Button className="custom-antd-button" type="primary" htmlType="submit" style={{ marginRight: 20 }} onClick={handleUpdateEvent}>
@@ -373,7 +340,19 @@ return (
                         type="primary" 
                         htmlType="submit" 
                         style={{ width: '300px' }}
-                        onClick={handleUpdateAttendees}>
+                        onClick={() => {
+                            const selectedAttendees = selectedParticipants.map(id => {
+                                const participant = participants.find(p => p.id === id);
+                                if (!participant) {
+                                    console.error(`Participant with ID ${id} not found`);
+                                }
+                                return participant;
+                            }).filter((p): p is Participant => p !== undefined); // Type guard to filter out undefined values
+            
+                            console.log('Selected Attendees:', selectedAttendees);
+            
+                            updateAttendees(selectedAttendees, Number(eventId));
+                        }}>
                         Replace Donors with Selected Ones
                     </Button>
                 </Row>
