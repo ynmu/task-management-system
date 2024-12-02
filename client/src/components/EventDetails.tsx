@@ -195,6 +195,15 @@ const EventDetails: React.FC = () => {
             try {
                 const response = await axios.get<Event>(`${API_BASE_URL}/events/${eventId}`);
                 setEvent(response.data);
+                form.setFieldsValue({
+                    name: response.data.name,
+                    topic: response.data.topic,
+                    date: response.data.date ? dayjs(response.data.date) : null,
+                    size: response.data.size,
+                    location: response.data.location,
+                    description: response.data.description,
+                    eventId: eventId,
+                });
             } catch (error) {
                 console.error('Failed to fetch this event:', error);
             }
@@ -202,7 +211,7 @@ const EventDetails: React.FC = () => {
         if (eventId) {
             fetchEvents(eventId);
         }
-    }, [user]);
+    }, [eventId]);
 
     // Fetch participants by eventId
     useEffect(() => {
@@ -219,7 +228,7 @@ const EventDetails: React.FC = () => {
             }
         }, [event]);
     
-    const handleCancel = () => {
+    const handleReset = () => {
         form.resetFields();
         setPossibleParticipants([]);
     };
@@ -255,7 +264,7 @@ return (
                             label="Event Name"
                             name="name"
                         >
-                            <Input placeholder={event?.name}/>
+                            <Input />
                         </Form.Item>
                     </Col>
                 </Row>
@@ -273,7 +282,7 @@ return (
                             label="Event Topic"
                             name="topic"
                         >
-                            <Select placeholder={event?.topic}>
+                            <Select>
                                 {topicNames.map(topic => (
                                     <Select.Option key={topic} value={topic}>
                                         {topic}
@@ -289,7 +298,7 @@ return (
                             label="Event Size"
                             name="size"
                         >
-                            <InputNumber min={1} style={{ width: '100%' }} placeholder={String(event?.size)} />
+                            <InputNumber min={1} style={{ width: '100%' }} />
                         </Form.Item>
                     </Col>
                     <Col span={12}>
@@ -297,9 +306,7 @@ return (
                             label="Location"
                             name="location"
                         >
-                            <Select 
-                                placeholder={event?.location}
-                                >
+                            <Select> 
                                 {cityNames.map(city => (
                                     <Select.Option key={city} value={city}>
                                         {city}
@@ -310,13 +317,16 @@ return (
                     </Col>
                 </Row>
                 <Form.Item label="Event Description" name="description">
-                    <Input.TextArea placeholder={event?.description} />
+                    <Input.TextArea />
                 </Form.Item>
                 <Row justify="center" style={{ marginTop: 16 }}>
                     <Button className="custom-antd-button" type="primary" htmlType="submit" style={{ marginRight: 20 }} onClick={handleUpdateEvent}>
                         Save Changes
                     </Button>
                     <Button className="custom-antd-button" type="primary" htmlType="submit" onClick={handleSearchDonors}>Search Donors</Button>
+                    <Button className="custom-antd-button" id="cancel-button" style={{ marginLeft: 20 }} onClick={handleReset}>
+                        Reset
+                    </Button>
                 </Row>
 
             </Form>
@@ -379,37 +389,8 @@ return (
                         onClick={handleDelete}>
                         Delete Selected Donors
                     </Button>
-                    <Button className="custom-antd-button" id="cancel-button" style={{ marginLeft: 20 }} onClick={handleCancel}>
-                        Cancel
-                    </Button>
                 </Row>
             </div>
-
-
-
-            {/* Participants List Section */}
-            {/* <div style={{ margin: '24px 0', borderBottom: '1px dashed grey' }}></div>
-            <div style={{ marginTop: 24 }}>
-                <h3>Participants List</h3>
-                <Table
-                    rowSelection={{
-                        type: 'checkbox',
-                        onChange: handleSelectedParticipants,
-                    }}
-                    dataSource={participants}
-                    columns={columns}
-                    rowKey="id"
-                />
-            </div>
-
-            <Row justify="center" gutter={16} style={{ marginTop: 16 }}>
-                <Col>
-                    <Button className="custom-antd-button" type="primary" onClick={handleUpdateEvent}>Update Event</Button>
-                </Col>
-                <Col>
-                    <Button className="custom-antd-button" id="cancel-button" onClick={handleCancel}>Cancel</Button>
-                </Col>
-            </Row> */}
         </>
     );
 };
