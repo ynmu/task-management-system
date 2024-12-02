@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useAuth }  from '../context/AuthContext';
-import { Form, Input, Button, DatePicker, Select, InputNumber, message, Row, Col, Table } from 'antd';
+import { Form, Input, Button, DatePicker, Select, InputNumber, message, Row, Col, Table, Popconfirm } from 'antd';
 import { columns, cityNames, topicNames, attendeeColumns} from "../assets/AddEventTable";
 import dayjs from 'dayjs';
 import './GeneralStyles.css';
@@ -249,6 +249,31 @@ const EventDetails: React.FC = () => {
         setPossibleParticipants([]);
     };
 
+    const handleDeleteEvent = async () => {
+        // Confirm the deletion
+        const confirm = window.confirm('Are you sure you want to delete this event?');
+        if (!confirm) {
+            return;
+        }
+
+        try {
+            // Make the DELETE request
+            const response = await axios.delete(`${API_BASE_URL}/events/${eventId}`);
+    
+            // Update the frontend state based on the response
+            if (response.status === 204) {
+                message.success('Event deleted successfully');
+            } else {
+                throw new Error('Failed to delete event');
+            }
+
+            // Redirect to the events page
+            window.location.href = '/view-event';
+        } catch (error: any) {
+            message.error(error.message);
+        }
+    }
+
 return (
         <>
             <Form
@@ -342,6 +367,9 @@ return (
                     <Button className="custom-antd-button" type="primary" htmlType="submit" onClick={handleSearchDonors}>Search Donors</Button>
                     <Button className="custom-antd-button" id="cancel-button" style={{ marginLeft: 20 }} onClick={handleReset}>
                         Reset
+                    </Button>
+                    <Button className="custom-antd-button" id="delete-button" style={{ marginLeft: 20, backgroundColor: '#b33e4a', color: 'white' }} onClick={handleDeleteEvent}>
+                        Delete Event
                     </Button>
                 </Row>
 
