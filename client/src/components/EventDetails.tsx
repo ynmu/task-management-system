@@ -96,12 +96,26 @@ const EventDetails: React.FC = () => {
     };
 
     // Update attendees as part of the event
-    const updateAttendees = async (attendees: Participant[], eventId: number) => {
+    const updateAttendees = async (attendees: Participant[], eventId: string) => {
         try {
-            // Log the attendees array to inspect its structure
-            console.log('Attendees array that is used to replace original attendees:', attendees);
-
-            const requestBody = attendees.map(attendee => ({
+            // // Log the attendees array to inspect its structure
+            // console.log('Attendees array that is used to replace original attendees:', attendees);
+    
+            // Delete existing attendees
+            const deleteResponse = await fetch(`${API_BASE_URL}/attendees/${eventId}`, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            });
+    
+            if (!deleteResponse.ok) {
+                const errorText = await deleteResponse.text();
+                throw new Error(`Failed to delete existing attendees: ${errorText}`);
+            }
+    
+            // Prepare the request body for adding new attendees
+            const requestAttendees = attendees.map(attendee => ({
                 firstName: attendee.firstName || '',
                 lastName: attendee.lastName || '',
                 organization: attendee.organizationName || null,
@@ -112,22 +126,24 @@ const EventDetails: React.FC = () => {
                 pmm: attendee.pmm || null,
                 smm: attendee.smm || null,
                 vmm: attendee.vmm || null,
-                eventId: eventId, // Ensure eventId is correctly set
+                eventId: Number(eventId), // Ensure eventId is correctly set
             }));
-            console.log('Request Body for Attendees:', requestBody); // Add a console log to inspect request body
     
-            const response = await fetch(`${API_BASE_URL}/attendees/:${eventId}`, {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(requestBody),
-            });
+            // // Add a console log to inspect request body
+            // console.log('Request Body for Attendees:', requestAttendees); 
     
-            if (response.ok) {
+            // Add new attendees
+            const postResponse = await axios.post(`${API_BASE_URL}/attendees`, requestAttendees);
+    
+            // // Await the response JSON
+            // console.log('Response after connecting with POST API endpoint:', postResponse);
+
+            setParticipants(attendees);
+    
+            if (postResponse.status === 200 || postResponse.status === 201) {
                 message.success('Attendees updated successfully');
             } else {
-                const errorText = await response.text(); // Read server response for more details
+                const errorText = postResponse.data.error;
                 throw new Error(`Failed to update attendees: ${errorText}`);
             }
         } catch (error: any) {
@@ -220,7 +236,7 @@ const EventDetails: React.FC = () => {
                     const response = await axios.get<any[]>(`${API_BASE_URL}/attendees/${eventId}`);
                     setParticipants(response.data);
                 } catch (error) {
-                    console.error('Failed to fetch event names:', error);
+                    console.error('Failed to fetch participants names:', error);
                 }
             };
             if (eventId) {
@@ -352,7 +368,7 @@ return (
                         style={{ width: '300px' }}
                         onClick={() => {
                             const selectedAttendees = selectedParticipants.map(id => {
-                                const participant = participants.find(p => p.id === id);
+                                const participant = possibleParticipants.find(p => p.id === id);
                                 if (!participant) {
                                     console.error(`Participant with ID ${id} not found`);
                                 }
@@ -361,7 +377,11 @@ return (
             
                             console.log('Selected Attendees:', selectedAttendees);
             
-                            updateAttendees(selectedAttendees, Number(eventId));
+                            if (eventId) {
+                                updateAttendees(selectedAttendees, eventId);
+                            } else {
+                                console.error('Event ID is undefined');
+                            }
                         }}>
                         Replace Donors with Selected Ones
                     </Button>
@@ -372,24 +392,14 @@ return (
             <div style={{ marginTop: 24 }}>
                 <h3>Donors List</h3>
                 <Table
-                    rowSelection={{
-                        type: 'checkbox',
-                    }}
+                    // rowSelection={{
+                    //     type: 'checkbox',
+                    // }}
                     dataSource={participants}
                     columns={attendeeColumns}
                     pagination={false}
                     rowKey="id"
                 />
-                <Row justify="center" style={{ marginTop: 20 }}>
-                    <Button 
-                        className="custom-antd-button" 
-                        type="primary" 
-                        htmlType="submit" 
-                        style={{ width: '300px' }}
-                        onClick={handleDelete}>
-                        Delete Selected Donors
-                    </Button>
-                </Row>
             </div>
         </>
     );

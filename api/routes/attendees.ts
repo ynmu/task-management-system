@@ -68,59 +68,47 @@ router.get('/:eventId', async (req: Request, res: Response) => {
     }
 });
 
-// Update attendee(s) for an event using the Event model
-router.put('/:eventId', async (req: Request, res: Response) => {
+// delete all attendee(s) for an event using the Event model
+router.delete('/:eventId', async (req: Request, res: Response): Promise<void> => {
     const { eventId } = req.params;
-    const attendees = req.body;
-
-    if (!Array.isArray(attendees) || attendees.length === 0) {
-        res.status(400).json({ error: 'Invalid or missing attendees data' });
-        return;
-    }
 
     try {
-        // Update the attendees
-        const updatedAttendees = await prisma.attendee.updateMany({
-            where: { eventId: parseInt(eventId) },
-            data: attendees,
+        // Check if the event exists
+        const eventExists = await prisma.event.findUnique({
+            where: { id: parseInt(eventId, 10) },
         });
 
-        console.log(`PUT /attendees/${eventId} - updated ${updatedAttendees.count} attendees`);
-        res.status(200).json({ message: 'Attendees updated successfully', count: updatedAttendees.count });
-    } catch (error) {
-        console.error('Error updating attendees:', error);
-        res.status(500).json({ error: 'Internal server error' });
-    }
-});
+        if (!eventExists) {
+            res.status(404).json({ error: `Event with ID ${parseInt(eventId, 10)} not found.` });
+        }
 
-// delete attendee(s) for an event using the Event model
-const deleteAttendeesHandler: RequestHandler = async (req, res): Promise<void> => {
-    const { eventId } = req.params;
-    const { attendeeIds } = req.body; // Array of attendee IDs from the request body
-
-    if (!attendeeIds || attendeeIds.length === 0) {
-        res.status(400).json({ error: 'No attendee IDs provided' });
-        return;
-    }
-
-    try {
+        // Delete attendees associated with the event
         const deletedAttendees = await prisma.attendee.deleteMany({
-            where: {
-                id: { in: attendeeIds },
-                eventId: parseInt(eventId, 10), // Parse eventId as a base-10 (decimal) number
-            },
+            where: { eventId: parseInt(eventId, 10) },
         });
+
+        // Check if any attendees were deleted
+        if (deletedAttendees.count === 0) {
+            res.status(200).json({
+                message: `No attendees found for event ID ${parseInt(eventId, 10)}. Nothing was deleted.`,
+                count: 0,
+            });
+            return;
+        }
 
         console.log(`DELETE /attendees/${eventId} - deleted ${deletedAttendees.count} attendees`);
-        res.status(200).json({ message: 'Attendees deleted successfully', count: deletedAttendees.count });
+        res.status(200).json({
+            message: 'Attendees deleted successfully.',
+            count: deletedAttendees.count,
+        });
     } catch (error) {
         console.error('Error deleting attendees:', error);
-        res.status(500).json({ error: 'Internal server error' });
+        res.status(500).json({
+            error: 'Internal server error.',
+            details: (error as any)?.message,
+        });
     }
-};
-
-// Attach the handler to the router
-router.delete('/:eventId', deleteAttendeesHandler);
+});
 
 // delete one attendee for an event using the Event model
 router.delete('/:eventId/:attendeeId', async (req: Request, res: Response) => {
