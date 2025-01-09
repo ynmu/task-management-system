@@ -21,3 +21,6 @@ npm run start-all
 Please refer to the [API README](api/README.md) for available API endpoints and instructions on setting up the API.
 
 Please refer to the [Client README](client/README.md) for instructions on starting the client.
+
+## Final Report
+[Presentation Slides](https://docs.google.com/presentation/d/1JlcwcwVtBgHGEy29qXcxJ7ct2JRUZ2kfdQDLSVUCTUg/edit#slide=id.g317e436215d_0_14)
