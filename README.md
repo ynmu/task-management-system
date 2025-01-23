@@ -1,6 +1,9 @@
 # BC Cancer Event Management System
 
-This is the repository for the BC Cancer Event Management System, developed by morning group 4 of CS 5500, Fall 2024.
+This is the repository for the BC Cancer Event Management System.
+
+<img width="1336" alt="image" src="https://github.com/user-attachments/assets/16b4e9a8-7244-45c6-bc85-1f695ddc1178" />
+
 
 ## Project Setup and Running
 The project uses `concurrently` for managing multiple processes. To install or update dependencies for both the frontend and backend, simply run:
