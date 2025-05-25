@@ -13,17 +13,70 @@ function serializeDonor(donor: Donor) {
   };
 }
 
-// 📌 Get all donors (optionally by city)
+// Get all donors
 router.get('/', async (req: Request, res: Response) => {
   try {
-    const { city } = req.query;
+    const donors = await prisma.donor.findMany();
+    console.log(`GET /donors - fetched ${donors.length} donors`);
+    res.status(200).json(donors.map(serializeDonor));
+  } catch (error) {
+    console.error('Error fetching donors:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
 
-    const donors = await prisma.donor.findMany({
-      where: city ? { city: String(city).trim() } : undefined,
-    });
+// Get donors by search term
+// Get all donors (allowing filtering via request body)
+router.post('/search', async (req: Request, res: Response) => {
+  try {
+    const {
+      cities,
+      minTotalDonations,
+      maxTotalDonations,
+      communicationPreferences
+    } = req.body;
+
+    const where: any = {};
+
+    // Handle city filtering
+    if (cities && Array.isArray(cities) && cities.length > 0) {
+      where.city = {
+        in: cities.map(c => String(c).trim()).filter(c => c.length > 0)
+      };
+    }
+
+    // Handle communication preference filtering
+    if (communicationPreferences && Array.isArray(communicationPreferences) && communicationPreferences.length > 0) {
+      where.communicationPreference = {
+        hasSome: communicationPreferences.map(cp => String(cp).trim()).filter(cp => cp.length > 0)
+      };
+    }
+
+    // Handle donation amount filtering
+    if (minTotalDonations || maxTotalDonations) {
+      where.totalDonations = {};
+      if (minTotalDonations) {
+        where.totalDonations.gte = Number(minTotalDonations);
+      }
+      if (maxTotalDonations) {
+        where.totalDonations.lte = Number(maxTotalDonations);
+      }
+    }
+
+    console.log('Donors query where clause:', JSON.stringify(where, null, 2));
+
+    const donors = await prisma.donor.findMany({ where });
 
     const serialized = donors.map(serializeDonor);
-    console.log(`GET /donors - fetched ${serialized.length} donors`);
+    console.log(`GET /donors/search - fetched ${serialized.length} donors with filters:`, {
+      cities: cities,
+      communicationPreferences: communicationPreferences,
+      donationRange: {
+        min: minTotalDonations,
+        max: maxTotalDonations
+      }
+    });
+    
     res.status(200).json(serialized);
   } catch (error) {
     console.error('Error fetching donors:', error);

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { Form, Input, Button, DatePicker, Select, InputNumber, message, Row, Col, Table, Card, Typography, Divider } from 'antd';
+import { Form, Input, Button, DatePicker, Select, InputNumber, message, Row, Col, Table, Card, Typography, Divider, Slider, Space } from 'antd';
+import { FilterOutlined, ClearOutlined } from '@ant-design/icons';
 import { columns, cityNames, topicNames } from "../assets/AddEventTable";
 import './GeneralStyles.css';
 import { API_BASE_URL } from '../config';
@@ -29,14 +30,36 @@ type Participant = {
     vmm: string;
 };
 
+type DonorFilters = {
+    cities: string[];
+    donationRange: [number, number];
+    communicationPreferences: string[];
+};
+
+const communicationOptions = [
+    { label: 'Holiday Card', value: 'Holiday_Card' },
+    { label: 'Survey', value: 'Survey' },
+    { label: 'Event', value: 'Event' },
+    { label: 'Thank You', value: 'Thank_you' },
+    { label: 'Newsletter', value: 'Newsletter' },
+    { label: 'Research Update', value: 'Research_update' }
+];
+
 const AddEvent: React.FC = () => {
     const [form] = Form.useForm();
     const [participants, setParticipants] = useState<Participant[]>([]);
+    const [filteredParticipants, setFilteredParticipants] = useState<Participant[]>([]);
     const [selectedParticipants, setSelectedParticipants] = useState<number[]>([]);
     const [selectedParticipantDetails, setSelectedParticipantDetails] = useState<Participant[]>([]);
     const [roles, setRoles] = useState<{ id: number; roleName: string }[]>([]);
     const [selectedRoleIds, setSelectedRoleIds] = useState<number[]>([]);
     const [loading, setLoading] = useState(false);
+    const [showFilters, setShowFilters] = useState(false);
+    const [filters, setFilters] = useState<DonorFilters>({
+        cities: [],
+        donationRange: [0, 20],
+        communicationPreferences: []
+    });
     const { user } = useAuth();
 
     useEffect(() => {
@@ -60,6 +83,27 @@ const AddEvent: React.FC = () => {
       fetchRoles();
     }, [user?.roleId]);
 
+    // Apply filters to participants
+    useEffect(() => {
+        let filtered = [...participants];
+
+        // Filter by cities
+        if (filters.cities.length > 0) {
+            filtered = filtered.filter(p => filters.cities.includes(p.city));
+        }
+
+        // Filter by donation range
+        filtered = filtered.filter(p => {
+            return p.totalDonations >= filters.donationRange[0] && 
+                   p.totalDonations <= filters.donationRange[1];
+        });
+
+        // Note: Communication preference filtering would need to be added to the participant data
+        // For now, we'll skip this filter as it's not in the current data structure
+
+        setFilteredParticipants(filtered);
+    }, [participants, filters]);
+
     // Data transformation
     const transformData = (data: any[]): Participant[] => {
       return data.map((item) => ({
@@ -77,25 +121,59 @@ const AddEvent: React.FC = () => {
       }));
     };
     
-    // Fetch participants
-    const fetchData = async (city: string) => {
-        try {
-            setLoading(true);
-            const response = await axios.get(`${API_BASE_URL}/donors?city=${city}`);
-            console.log('Response:', response);
-            if (response.status === 200) {
-                const data = response.data;
-                const transformedData = transformData(data);
-                setParticipants(transformedData);
-                message.success(`Found ${transformedData.length} donors in ${city}`);
-            } else {
-                throw new Error('Failed to fetch participants');
-            }
-        } catch (error: any) {
-            message.error(error.message);
-        } finally {
-            setLoading(false);
-        }
+    // Fetch participants with filters
+    const fetchData = async (baseCity: string, applyFilters = false) => {
+      try {
+          setLoading(true);
+          
+          // Build request body
+          const requestBody: any = {};
+          
+          if (applyFilters) {
+              // Use filter cities if available, otherwise use base city
+              if (filters.cities.length > 0) {
+                  requestBody.cities = filters.cities;
+              } else if (baseCity) {
+                  requestBody.cities = [baseCity];
+              }
+              
+              // Add donation range - always include both bounds to avoid undefined upper bound
+              requestBody.minTotalDonations = filters.donationRange[0];
+              requestBody.maxTotalDonations = filters.donationRange[1];
+              
+              // Add communication preferences
+              if (filters.communicationPreferences.length > 0) {
+                  requestBody.communicationPreferences = filters.communicationPreferences;
+              }
+          } else {
+              requestBody.cities = [baseCity];
+              // Set default donation range bounds when not applying filters
+              requestBody.minTotalDonations = 0;
+              requestBody.maxTotalDonations = 20;
+          }
+
+          console.log('Request body:', requestBody); // Debug log
+
+          const response = await axios.post(`${API_BASE_URL}/donors/search`, requestBody, {
+              headers: {
+                  'Content-Type': 'application/json',
+              },
+          });
+          
+          console.log('Response:', response);
+          if (response.status === 200) {
+              const data = response.data;
+              const transformedData = transformData(data);
+              setParticipants(transformedData);
+              message.success(`Found ${transformedData.length} donors`);
+          } else {
+              throw new Error('Failed to fetch participants');
+          }
+      } catch (error: any) {
+          message.error(error.message);
+      } finally {
+          setLoading(false);
+      }
     };
 
     const handleSubmit = async () => {
@@ -104,6 +182,28 @@ const AddEvent: React.FC = () => {
             await fetchData(values.location);
         } catch (error) {
             message.error('Failed to fetch the participants list. Please ensure the form is valid.');
+        }
+    };
+
+    const handleApplyFilters = async () => {
+        const values = form.getFieldsValue(['location']);
+        if (values.location || filters.cities.length > 0) {
+            await fetchData(values.location, true);
+        } else {
+            message.warning('Please select a location first or choose cities in the filter.');
+        }
+    };
+
+    const handleClearFilters = () => {
+        setFilters({
+            cities: [],
+            donationRange: [0, 20],
+            communicationPreferences: []
+        });
+        // Re-fetch with original location
+        const values = form.getFieldsValue(['location']);
+        if (values.location) {
+            fetchData(values.location);
         }
     };
 
@@ -177,7 +277,7 @@ const AddEvent: React.FC = () => {
         const newEvent = await response.json();
         message.success('Event saved successfully');
     
-        const selectedDonors = participants.filter(p =>
+        const selectedDonors = filteredParticipants.filter(p =>
           selectedParticipants.includes(p.id)
         );
     
@@ -187,6 +287,7 @@ const AddEvent: React.FC = () => {
         setSelectedParticipants([]);
         setSelectedParticipantDetails([]);
         setParticipants([]);
+        setFilteredParticipants([]);
       } catch (error: unknown) {
         if (error instanceof Error) {
           message.error(`Error saving the event: ${error.message}`);
@@ -199,8 +300,14 @@ const AddEvent: React.FC = () => {
     const handleCancel = () => {
         form.resetFields();
         setParticipants([]);
+        setFilteredParticipants([]);
         setSelectedParticipants([]);
         setSelectedParticipantDetails([]);
+        setFilters({
+            cities: [],
+            donationRange: [0, 20],
+            communicationPreferences: []
+        });
     };
 
     return (
@@ -371,54 +478,186 @@ const AddEvent: React.FC = () => {
                     title={
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                             <Title level={3} style={{ margin: 0 }}>
-                                Available Donors {participants.length > 0 && `(${participants.length})`}
+                                Available Donors {filteredParticipants.length > 0 && `(${filteredParticipants.length})`}
                             </Title>
-                            {selectedParticipants.length > 0 && (
-                                <Text type="secondary">
-                                    {selectedParticipants.length} selected
-                                </Text>
-                            )}
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                                {selectedParticipants.length > 0 && (
+                                    <Text type="secondary">
+                                        {selectedParticipants.length} selected
+                                    </Text>
+                                )}
+                                <Button
+                                    icon={<FilterOutlined />}
+                                    onClick={() => setShowFilters(!showFilters)}
+                                    type={showFilters ? 'primary' : 'default'}
+                                    size="small"
+                                >
+                                    Filters
+                                </Button>
+                            </div>
                         </div>
                     }
                     style={{ height: '100%' }}
-                    bodyStyle={{ padding: 0, height: 'calc(100% - 57px)', overflow: 'hidden' }}
+                    bodyStyle={{ padding: 0, height: 'calc(100% - 57px)', overflow: 'hidden', position: 'relative' }}
                 >
-                    {participants.length > 0 ? (
-                        <Table
-                            rowSelection={{
-                                type: 'checkbox',
-                                selectedRowKeys: selectedParticipants,
-                                onChange: handleSelectedParticipants,
-                            }}
-                            dataSource={participants}
-                            columns={columns}
-                            rowKey="id"
-                            scroll={{ 
-                                x: 1200, // Enable horizontal scrolling with minimum width
-                                y: 'calc(100vh - 200px)' 
-                            }}
-                            pagination={{
-                                pageSize: 20,
-                                showSizeChanger: true,
-                                showQuickJumper: true,
-                                showTotal: (total, range) => 
-                                    `${range[0]}-${range[1]} of ${total} donors`,
-                            }}
-                        />
-                    ) : (
-                        <div style={{ 
-                            display: 'flex', 
-                            justifyContent: 'center', 
-                            alignItems: 'center', 
-                            height: '100%',
-                            flexDirection: 'column',
-                            color: '#999'
+                    {/* Floating Filter Panel */}
+                    {showFilters && (
+                        <div style={{
+                            position: 'absolute',
+                            top: 0,
+                            left: 0,
+                            right: 0,
+                            zIndex: 10,
+                            background: 'linear-gradient(135deg, #f6f9fc 0%, #ffffff 100%)',
+                            border: '1px solid #e8f4fd',
+                            borderRadius: '12px',
+                            padding: '20px',
+                            margin: '16px',
+                            boxShadow: '0 8px 32px rgba(24, 144, 255, 0.12), 0 2px 8px rgba(24, 144, 255, 0.08)',
+                            backdropFilter: 'blur(8px)',
                         }}>
-                            <Text type="secondary" style={{ fontSize: '16px' }}>
-                                {loading ? 'Searching for donors...' : 'Search for donors to see available participants'}
-                            </Text>
+                            <div style={{ marginBottom: '16px' }}>
+                                <Text strong style={{ fontSize: '16px', color: '#1890ff' }}>
+                                    <FilterOutlined style={{ marginRight: '8px' }} />
+                                    Filter Donors
+                                </Text>
+                            </div>
+                            
+                            <Row gutter={16} style={{ marginBottom: '16px' }}>
+                                <Col span={8}>
+                                    <div style={{ marginBottom: '8px' }}>
+                                        <Text strong>Cities</Text>
+                                    </div>
+                                    <Select
+                                        mode="multiple"
+                                        style={{ width: '100%' }}
+                                        placeholder="Select cities"
+                                        value={filters.cities}
+                                        onChange={(cities) => setFilters(prev => ({ ...prev, cities }))}
+                                        maxTagCount="responsive"
+                                    >
+                                        {cityNames.map(city => (
+                                            <Select.Option key={city} value={city}>
+                                                {city}
+                                            </Select.Option>
+                                        ))}
+                                    </Select>
+                                </Col>
+                                
+                                <Col span={8}>
+                                    <div style={{ marginBottom: '8px' }}>
+                                        <Text strong>Total Donations</Text>
+                                    </div>
+                                    <div style={{ padding: '0 8px' }}>
+                                        <Slider
+                                            range
+                                            min={0}
+                                            max={20}
+                                            step={1}
+                                            value={filters.donationRange}
+                                            onChange={(range) => setFilters(prev => ({ ...prev, donationRange: range as [number, number] }))}
+                                            marks={{ 0: '0', 10: '10', 20: '20' }}
+                                        />
+                                    </div>
+                                </Col>
+                                
+                                <Col span={8}>
+                                    <div style={{ marginBottom: '8px' }}>
+                                        <Text strong>Communication Preferences</Text>
+                                    </div>
+                                    <Select
+                                        mode="multiple"
+                                        style={{ width: '100%' }}
+                                        placeholder="Select preferences"
+                                        value={filters.communicationPreferences}
+                                        onChange={(prefs) => setFilters(prev => ({ ...prev, communicationPreferences: prefs }))}
+                                        maxTagCount="responsive"
+                                    >
+                                        {communicationOptions.map(option => (
+                                            <Select.Option key={option.value} value={option.value}>
+                                                {option.label}
+                                            </Select.Option>
+                                        ))}
+                                    </Select>
+                                </Col>
+                            </Row>
+                            
+                            <Space>
+                                <Button 
+                                    type="primary" 
+                                    onClick={handleApplyFilters}
+                                    loading={loading}
+                                    style={{
+                                        background: 'linear-gradient(135deg, #1890ff 0%, #096dd9 100%)',
+                                        border: 'none',
+                                        borderRadius: '6px',
+                                        boxShadow: '0 2px 8px rgba(24, 144, 255, 0.3)'
+                                    }}
+                                >
+                                    Apply Filters
+                                </Button>
+                                <Button 
+                                    icon={<ClearOutlined />} 
+                                    onClick={handleClearFilters}
+                                    style={{
+                                        borderRadius: '6px'
+                                    }}
+                                >
+                                    Clear All
+                                </Button>
+                                <Button 
+                                    type="text" 
+                                    onClick={() => setShowFilters(false)}
+                                    style={{ color: '#8c8c8c' }}
+                                >
+                                    Close
+                                </Button>
+                            </Space>
                         </div>
                     )}
+
+                    {/* Table Container */}
+                    <div style={{
+                        height: '100%',
+                        position: 'relative'
+                    }}>
+                        {filteredParticipants.length > 0 ? (
+                            <Table
+                                rowSelection={{
+                                    type: 'checkbox',
+                                    selectedRowKeys: selectedParticipants,
+                                    onChange: handleSelectedParticipants,
+                                }}
+                                dataSource={filteredParticipants}
+                                columns={columns}
+                                rowKey="id"
+                                scroll={{ 
+                                    x: 1200,
+                                    y: showFilters ? 'calc(100vh - 400px)' : 'calc(100vh - 200px)'
+                                }}
+                                pagination={{
+                                    pageSize: 20,
+                                    showSizeChanger: true,
+                                    showQuickJumper: true,
+                                    showTotal: (total, range) => 
+                                        `${range[0]}-${range[1]} of ${total} donors`,
+                                }}
+                            />
+                        ) : (
+                            <div style={{ 
+                                display: 'flex', 
+                                justifyContent: 'center', 
+                                alignItems: 'center', 
+                                height: '100%',
+                                flexDirection: 'column',
+                                color: '#999'
+                            }}>
+                                <Text type="secondary" style={{ fontSize: '16px' }}>
+                                    {loading ? 'Searching for donors...' : 'Search for donors to see available participants'}
+                                </Text>
+                            </div>
+                        )}
+                    </div>
                 </Card>
             </Col>
         </Row>

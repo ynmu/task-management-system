@@ -7,6 +7,15 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum CommunicationPreference {
+  Holiday_Card
+  Survey
+  Event
+  Thank_you
+  Newsletter
+  Research_update
+}
+
 model Event {
   id          Int            @id @default(autoincrement())
   name        String
@@ -79,7 +88,7 @@ model Donor {
   communicationRestrictions String?
   subscriptionInPerson      String
   subscriptionMagazine      String
-  communicationPreference   String?
+  communicationPreference   CommunicationPreference[]
   events                DonorOnEvent[]
 }
 
