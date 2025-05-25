@@ -40,6 +40,11 @@ npm install
 
 # Migrate and Generate Database
 
+To create the database and apply the migrations, run:
+
+```bash
+npx prisma migrate dev --name init
+```
 
 To generate the Prisma client, use:
 
@@ -59,6 +64,14 @@ To reset the database and deploy the current schema, use (**Note**: this will po
 ```bash
 npx prisma migrate deploy
 ```
+
+# Restore the Database
+To populate the database with initial data, locate the restore script in `services/seedInit.ts` and run the following command:
+
+```bash
+npx ts-node services/seedInit.ts
+```
+This will create the initial donor and event data in the database.
 
 
 # Run the Server

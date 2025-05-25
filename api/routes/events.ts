@@ -7,7 +7,8 @@ const router = Router();
 // Create an Event
 router.post('/', async (req: Request, res: Response) => {
   try {
-    const { name, description, topic, size, date, location, roleId } = req.body;
+    const { name, description, topic, size, date, location, sharedRoleIds = [] } = req.body;
+
     const newEvent = await prisma.event.create({
       data: {
         name,
@@ -16,15 +17,25 @@ router.post('/', async (req: Request, res: Response) => {
         size,
         date: new Date(date),
         location,
-        roleId,
-        status: false
+        status: false,
+        sharedRoles: {
+          create: sharedRoleIds.map((roleId: number) => ({
+            roleId,
+          })),
+        },
+      },
+      include: {
+        sharedRoles: {
+          include: { role: true }, // Optional: include role details in response
+        },
       },
     });
+
     console.log(`POST /events created: ${JSON.stringify(newEvent)}`);
     res.status(201).json(newEvent);
   } catch (error) {
-    console.log(`POST /events failed: ${error}`);
-    res.status(500).json({ error: `Failed to create event: ${error}` });
+    console.error(`POST /events failed:`, error);
+    res.status(500).json({ error: 'Failed to create event' });
   }
 });
 
@@ -65,24 +76,19 @@ router.get('/role/:roleId', async (req: Request, res: Response) => {
   const { roleId } = req.params;
 
   try {
-    // Find the role and include the associated events
-    const roleWithEvents = await prisma.role.findUnique({
+    const roleOnEvents = await prisma.roleOnEvent.findMany({
       where: {
-        id: parseInt(roleId),
+        roleId: parseInt(roleId),
       },
       include: {
-        sharedEvents: true, // This assumes your model relation is correctly set
+        event: true,
       },
     });
 
-    if (!roleWithEvents) {
-      console.log(`GET /events/role/${roleId} failed: Role not found`);
-      res.status(404).json({ message: 'Role not found' });
-      return;
-    }
+    const events = roleOnEvents.map(re => re.event);
 
-    console.log(`GET /events/role/${roleId} fetchedEvents`, roleWithEvents.sharedEvents);
-    res.status(200).json(roleWithEvents.sharedEvents);
+    console.log(`GET /events/role/${roleId} → ${events.length} events`);
+    res.status(200).json(events);
   } catch (error) {
     console.error('Error fetching events for role:', error);
     res.status(500).json({ error: 'Failed to fetch events for the role' });

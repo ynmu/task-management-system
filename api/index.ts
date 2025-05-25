@@ -1,7 +1,8 @@
 import express from 'express';
 import userRoutes from './routes/users';
 import eventRoutes from './routes/events';
-import attendeeRoutes from './routes/attendees';
+// import attendeeRoutes from './routes/attendees';
+import donorRoutes from './routes/donors'; // Using donor routes for attendees
 import cors from 'cors';
 import seedRoles from './services/seedRoles';
 
@@ -19,7 +20,8 @@ app.use(cors({
 // Routes
 app.use('/users', userRoutes);
 app.use('/events', eventRoutes);
-app.use('/attendees', attendeeRoutes);
+// app.use('/attendees', attendeeRoutes);
+app.use('/donors', donorRoutes); // Using donor routes for attendees
 
 
 (async () => {

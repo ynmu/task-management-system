@@ -2,11 +2,6 @@ import { title } from "process";
 
 export const columns = [
     {
-        title: 'ID',
-        dataIndex: 'id',
-        key: 'id',
-    },
-    {
         title: 'First Name',
         dataIndex: 'firstName',
         key: 'firstName',
@@ -16,6 +11,11 @@ export const columns = [
         dataIndex: 'lastName',
         key: 'lastName',
 
+    },
+    {
+        title: 'City',
+        dataIndex: 'city',
+        key: 'city',
     },
     {
         title:"Organization Name",
@@ -37,26 +37,6 @@ export const columns = [
         dataIndex: 'addressLine2',
         key: 'addressLine2',
     },
-    {
-        title: 'City',
-        dataIndex: 'city',
-        key: 'city',
-    },
-    {
-        title: 'pmm',
-        dataIndex: 'pmm',
-        key: 'pmm',
-    },
-    {
-        title:'smm',
-        dataIndex: 'smm',
-        key: 'smm',
-    },
-    {
-        title: 'vmm',
-        dataIndex: 'vmm',
-        key: 'vmm',
-    }
 ];
 
 export const attendeeColumns = [

@@ -4,8 +4,13 @@
       "install-api": "cd api && npm install",
       "install-client": "cd client && npm install",
       "dev": "concurrently \"npm run dev-api\" \"npm run dev-client\"",
-      "dev-api": "cd api && ts-node index.ts",
+      "dev-api": "cd api && ts-node-dev --respawn --transpile-only index.ts",
       "dev-client": "cd client && npm start"
+    },
+    "dependencies": {
+        "csv-parse": "^5.6.0"
+    },
+    "devDependencies": {
+        "ts-node-dev": "^2.0.0"
     }
-  }
-  
+}
