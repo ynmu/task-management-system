@@ -55,6 +55,10 @@ model User {
   roleId        Int
   role          Role?     @relation(fields: [roleId], references: [id])
   password      String
+  profileUrl    String?
+  firstName     String?
+  lastName      String?
+  email         String? @unique
 }
 
 

@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { API_BASE_URL } from '../config';
-import './UsersPage.css';
-import './Pages.css';
-import SideBar from '../components/SideBar';
+import '../css/MembersPage.css';
+import '../css/Pages.css';
 import { TbUserQuestion } from "react-icons/tb";
 import { useAuth } from '../context/AuthContext';
 
@@ -19,7 +18,7 @@ interface User {
   roleName?: string;
 }
 
-const UsersPage: React.FC = () => {
+const MembersPage: React.FC = () => {
   const [roles, setRoles] = useState<Role[]>([]);
   const [usersByRole, setUsersByRole] = useState<Record<number, User[]>>({});
   const { user: currentUser } = useAuth();
@@ -48,11 +47,7 @@ const UsersPage: React.FC = () => {
 
   return (
     <div className="users-page">
-      <header className="page-header">
-        <h1>Active Users</h1>
-      </header>
       <div className="users-page-container">
-        <SideBar />
         <div className="roles-table-section">
           {roles.map((role) => (
             <div key={role.id} className="role-table">
@@ -87,4 +82,4 @@ const UsersPage: React.FC = () => {
   );
 };
 
-export default UsersPage;
+export default MembersPage;

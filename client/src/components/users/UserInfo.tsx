@@ -1,12 +1,15 @@
 import React from 'react';
-import './UserInfo.css';
+import '../../css/UserInfo.css';
 
 interface UserInfoProps {
   role: string;
   employeeNumber: string;
   userName: string;
   ongoingJobsCount: number;
-  profilePic: string;
+  profilePic?: string; 
+  firstName?: string;
+  lastName?: string;
+  email?: string;
 }
 
 const UserInfo: React.FC<UserInfoProps> = ({ role, employeeNumber, userName, ongoingJobsCount, profilePic }) => {

@@ -1,13 +1,10 @@
-import AddEvent from "../components/AddEvent";
+import AddEvent from "../components/events/AddEvent";
 
 
 
 const AddEventPage: React.FC = () => {
     return (
         <div>
-            <header className="page-header">
-                <h1>Add Event</h1>
-            </header>
             <AddEvent />
         </div>
     );

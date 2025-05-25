@@ -1,14 +1,13 @@
 import React, { useEffect, useState } from "react";
-import { useAuth }  from '../context/AuthContext';
+import { useAuth } from "../../context/AuthContext";
 import { Form, Input, Button, DatePicker, Select, InputNumber, message, Row, Col, Table, Popconfirm } from 'antd';
-import { columns, cityNames, topicNames, attendeeColumns} from "../assets/AddEventTable";
+import { columns, cityNames, topicNames, attendeeColumns } from '../../assets/EventFields';
 import dayjs from 'dayjs';
-import './GeneralStyles.css';
-import { API_BASE_URL } from '../config';
+import '../../css/GeneralStyles.css';
+import { API_BASE_URL } from '../../config';
 import axios from 'axios';
 import { useParams } from 'react-router-dom';
 
-const BC_CANCER_API = 'https://bc-cancer-faux.onrender.com/event';
 
 type Participant = {
     id: number;
@@ -64,7 +63,7 @@ const EventDetails: React.FC = () => {
     // Fetch possible participants 
     const fetchData = async (city: string) => {
         try {
-            const response = await axios.get(`${BC_CANCER_API}?cities=${city}&format=json`);
+            const response = await axios.get(`${API_BASE_URL}/donors/?city=${city}`);
             console.log('Response:', response);
             if (response.status === 200) {
                 const data = response.data;

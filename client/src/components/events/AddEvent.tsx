@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { Form, Input, Button, DatePicker, Select, InputNumber, message, Row, Col, Table, Card, Typography, Divider, Slider, Space } from 'antd';
 import { FilterOutlined, ClearOutlined } from '@ant-design/icons';
-import { columns, cityNames, topicNames } from "../assets/AddEventTable";
-import './GeneralStyles.css';
-import { API_BASE_URL } from '../config';
-import { useAuth }  from '../context/AuthContext';
+import { columns, cityNames, topicNames } from "../../assets/EventFields";
+import '../../css/GeneralStyles.css';
+import { API_BASE_URL } from '../../config';
+import { useAuth }  from '../../context/AuthContext';
 import axios from 'axios';
 import { saveAs } from 'file-saver';
 
@@ -15,7 +15,7 @@ const downloadFile = (data: any) => {
   const blob = new Blob([data], { type: 'application/octet-stream' });
   saveAs(blob, 'exported-file.xlsx');
 };
-
+ 
 type Participant = {
     id: number;
     firstName: string;
@@ -110,6 +110,7 @@ const AddEvent: React.FC = () => {
         id: item.id,
         firstName: item.firstName,
         lastName: item.lastName,
+        fullName: `${item.firstName} ${item.lastName}`,
         organizationName: item.organizationName || '',
         totalDonations: item.totalDonations,
         addressLine1: item.addressLine1,
@@ -414,16 +415,17 @@ const AddEvent: React.FC = () => {
                             <Input.TextArea rows={4} placeholder="Enter event description" />
                         </Form.Item>
 
-                        {/* Search Button */}
+                        {/* Save Event Button */}
                         <Form.Item>
                             <Button 
                                 className="custom-antd-button" 
                                 type="primary" 
                                 block
                                 loading={loading}
-                                onClick={handleSubmit}
+                                onClick={handleSaveEvent}
+                                disabled={selectedParticipants.length === 0}
                             >
-                                Search Donors
+                                Save Event
                             </Button>
                         </Form.Item>
 
@@ -632,11 +634,11 @@ const AddEvent: React.FC = () => {
                                 columns={columns}
                                 rowKey="id"
                                 scroll={{ 
-                                    x: 1200,
-                                    y: showFilters ? 'calc(100vh - 400px)' : 'calc(100vh - 200px)'
+                                    x: 700,
+                                    y: 'calc(100vh - 200px)'
                                 }}
                                 pagination={{
-                                    pageSize: 20,
+                                    pageSize: 15,
                                     showSizeChanger: true,
                                     showQuickJumper: true,
                                     showTotal: (total, range) => 

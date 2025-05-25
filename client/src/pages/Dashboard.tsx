@@ -1,13 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
-import './Dashboard.css'; 
-import UserInfo from '../components/UserInfo';
+import '../css/Dashboard.css'; 
+import UserInfo from '../components/users/UserInfo';
 import profilePic from '../assets/profile-test-avatar.png'; // Importing the profile picture
-import './Pages.css';
+import '../css/Pages.css';
 import { API_BASE_URL } from '../config';
 import { saveAs } from 'file-saver'; // Import file-saver
-import SideBar from '../components/SideBar';
 
 interface Job {
   id: string;
@@ -79,11 +78,7 @@ const Dashboard: React.FC = () => {
 
   return (
     <div className="dashboard">
-      <header className="page-header">
-        <h1>Dashboard</h1>
-      </header>
       <div className="dashboard-container">
-        <SideBar />
         <main className="dashboard-main">
           <UserInfo
             role={user?.roleName || 'N/A'}

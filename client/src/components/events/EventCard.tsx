@@ -1,5 +1,5 @@
 import React from 'react';
-import './EventCard.css';
+import '../../css/EventCard.css';
 import { FaUserFriends } from "react-icons/fa";
 import { FaCalendar } from "react-icons/fa";
 import { BsFillPinMapFill } from "react-icons/bs";

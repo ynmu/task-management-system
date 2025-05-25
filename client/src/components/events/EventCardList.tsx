@@ -1,11 +1,11 @@
-import './GeneralStyles.css';
-import { API_BASE_URL } from '../config';
+import '../../css/GeneralStyles.css';
+import { API_BASE_URL } from '../../config';
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import EventCard from './EventCard';
-import './EventCard.css';
-import { useAuth } from '../context/AuthContext';
-import './EventCardList.css';
+import '../../css/EventCard.css';
+import '../../css/EventCardList.css';
+import { useAuth } from '../../context/AuthContext';
 
 interface Event {
     id: string;

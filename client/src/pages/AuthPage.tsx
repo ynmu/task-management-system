@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { API_BASE_URL } from '../config';
-import RoleDropdown from '../components/RoleDropdown';
+import RoleDropdown from '../components/users/RoleDropdown';
 import { useAuth } from '../context/AuthContext';
-import './AuthPage.css';
+import '../css/AuthPage.css';
 import { useNavigate, useLocation } from 'react-router-dom';
 
 const AuthPage: React.FC = () => {

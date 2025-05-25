@@ -1,0 +1,8 @@
+/* Custom override for selected menu item */
+:where(.ant-menu-light) .ant-menu-item-selected {
+  background-color: #000000 !important;
+  color: #ffffff !important;
+}
+
+:where(.ant-menu-light) .ant-menu-item:hover {
+}
