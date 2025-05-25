@@ -1,11 +1,32 @@
 # API Server Setup
 
+Note: Project script is already set up under CS5500_GROUP4_BCCANCER, so if you are new to this project, you can skip the setup steps below and directly run the project using the command `npm run dev` in the root directory.
+
 ## Before You Get Started - Environment Variables
 
-Create a `.env` file in the `` directory with the following content (update the `DATABASE_URL` as per rubing's credentials; please refer to the group chat):
+Copy the `.env.example` file to `.env` in the `api` folder and update the `DATABASE_URL` with your PostgreSQL database connection string.
 
-```env
-DATABASE_URL="postgresql://cs5500_group4_bccancer_user:xxxx@xxxx.oregon-postgres.render.com/cs5500_group4_bccancer"
+If you haven't set up a PostgreSQL database yet, you can use the following command to create a new database (update myuser, mypassword, and mydb with your desired username, password, and database name):
+
+```bash
+# Log in to psql as postgres superuser
+psql -U postgres
+```
+
+```sql
+-- Create a new user with a password
+CREATE USER myuser WITH PASSWORD 'mypassword';
+
+-- Create a new database
+CREATE DATABASE mydb;
+
+-- Grant privileges to the new user on the new database
+GRANT ALL PRIVILEGES ON DATABASE mydb TO myuser;
+
+-- Allow the user to create tables for prisma
+ALTER USER myuser CREATEDB;
+-- Exit psql
+\q
 ```
 
 Go to api folder and run the following commands:

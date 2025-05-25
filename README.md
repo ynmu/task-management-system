@@ -6,17 +6,33 @@ This is the repository for the BC Cancer Event Management System.
 
 
 ## Project Setup and Running
-The project uses `concurrently` for managing multiple processes. To install or update dependencies for both the frontend and backend, simply run:
+1. Clone the repository:
 
 ```bash
-npm run install-all
+git clone https://github.com/5500Group4/5500Group4.git
 ```
-in the root directory (where this README is located).
+
+2. Navigate to the project directory:
+
+```bash
+cd CS5500_GROUP4_BCCANCER
+```
+3. Set up the environment variables:
+- Copy the `.env.example` file to `.env` in the `api` folder and update the `DATABASE_URL` with your PostgreSQL database connection string.
+- If you haven't set up a PostgreSQL database yet, refer to the [API README](api/README.md) for details.
+
+
+4. The project uses `concurrently` for managing multiple processes. To install or update dependencies for both the frontend and backend, simply run:
+
+```bash
+npm run install
+```
+in the root directory (`CS5500_GROUP4_BCCANCER`, where this README is located).
 
 To start the project, run in the root directory:
 
 ```bash
-npm run start-all
+npm run dev
 ```
 
 ## Separate Development
