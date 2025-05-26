@@ -1,18 +1,20 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useLocation, Link } from 'react-router-dom';
-import './NavBar.css';
-import { useAuth } from '../context/AuthContext';
+import { MenuOutlined } from '@ant-design/icons';
+import '../../css/NavBar.css';
+import { useAuth } from '../../context/AuthContext';
 
 const Navbar: React.FC = () => {
-  const location = useLocation(); // Get the current location
-  const { isAuthenticated, user, logout } = useAuth(); // Access user data and logout function from the context
+  const location = useLocation();
+  const { isAuthenticated, user, logout } = useAuth();
 
   return (
     <nav className="navbar">
-      <h1 className="navbar-title">BC Cancer Event Management</h1>
-      <div className="navbar-links">
+      <div className="flex items-center gap-4">
+        <h1 className="navbar-title">BC Cancer Event Management</h1>
+      </div>
 
-        {/* Back to Dashboard link */}
+      <div className="navbar-links">
         {location.pathname !== '/' && isAuthenticated && (
           <Link to="/" className="navbar-back-button">
             <div>Back to Dashboard</div>

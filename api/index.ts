@@ -5,6 +5,7 @@ import eventRoutes from './routes/events';
 import donorRoutes from './routes/donors'; // Using donor routes for attendees
 import cors from 'cors';
 import seedRoles from './services/seedRoles';
+import noteRoutes from './routes/notes';
 
 
 const app = express();
@@ -22,6 +23,7 @@ app.use('/users', userRoutes);
 app.use('/events', eventRoutes);
 // app.use('/attendees', attendeeRoutes);
 app.use('/donors', donorRoutes); // Using donor routes for attendees
+app.use('/notes', noteRoutes);
 
 
 (async () => {

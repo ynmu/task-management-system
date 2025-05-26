@@ -1,37 +1,50 @@
-// src/App.tsx
 import React from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import './App.css';
-import NavBar from './components/NavBar';
 import Dashboard from './pages/Dashboard';
 import AddEventPage from './pages/AddEventPage';
 import ViewEventPage from './pages/ViewEventPage';
-import UsersPage from './pages/UsersPage';
+import MembersPage from './pages/MembersPage';
 import AuthPage from './pages/AuthPage';
-import ProtectedRoute from './components/ProtectedRoute'; // Import the ProtectedRoute component
-import { AuthProvider } from './context/AuthContext';
+import Account from './pages/Account';
+import ProtectedRoute from './components/auth/ProtectedRoute';
+import { AuthProvider, useAuth } from './context/AuthContext';
 import EditEventPage from './pages/EditEventPage';
+import SideBar from './components/ui/SideBar';
 
-function App() {
+const AppLayout: React.FC = () => {
+  const { user } = useAuth();
+
   return (
-    <AuthProvider>
-      <Router>
-        <NavBar />
-        <div className='App'>
+    <div className="flex h-screen">
+      {user && <SideBar />}
+      <div className="flex-1 flex flex-col">
+        {/* <div className="p-4 overflow-y-auto"> */}
           <Routes>
             <Route path="/auth" element={<AuthPage />} />
             <Route element={<ProtectedRoute />}>
-              <Route path="/" element={<Dashboard />} />
-              <Route path="/add-event" element={<AddEventPage />} />
-              <Route path="/view-event" element={<ViewEventPage />} />
-              <Route path="/view-users" element={<UsersPage />} />
-              <Route path="/event-details/:id" element={<EditEventPage />} />
+            <Route path="/" element={<Dashboard />} />
+            <Route path="/add-event" element={<AddEventPage />} />
+            <Route path="/view-event" element={<ViewEventPage />} />
+            <Route path="/view-members" element={<MembersPage />} />
+            <Route path="/event-details/:id" element={<EditEventPage />} />
+            <Route path="/account" element={<Account />} />
             </Route>
           </Routes>
-        </div>
+        {/* </div> */}
+      </div>
+    </div>
+  );
+};
+
+const App: React.FC = () => {
+  return (
+    <AuthProvider>
+      <Router>
+        <AppLayout />
       </Router>
     </AuthProvider>
   );
-}
+};
 
 export default App;

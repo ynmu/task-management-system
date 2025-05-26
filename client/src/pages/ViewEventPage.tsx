@@ -1,12 +1,9 @@
-import ViewEvents from '../components/EventCardList';
+import EventCardList from '../components/events/EventCardList';
 
 const ViewEventsPage: React.FC = () => {
     return (
-        <div>
-            <header className="page-header">
-                <h1>View Events</h1>
-            </header>
-            <ViewEvents />
+        <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-100 p-8">
+            <EventCardList />
         </div>
     );
 };

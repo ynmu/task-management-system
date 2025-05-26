@@ -1,42 +1,30 @@
 import { title } from "process";
 
 export const columns = [
-    {
-        title: 'First Name',
-        dataIndex: 'firstName',
-        key: 'firstName',
-    },
-    { 
-        title: 'Last Name',
-        dataIndex: 'lastName',
-        key: 'lastName',
-
-    },
-    {
-        title: 'City',
-        dataIndex: 'city',
-        key: 'city',
-    },
-    {
-        title:"Organization Name",
-        dataIndex: 'organizationName',
-        key: 'organizationName',
-    },
-    {
-        title:"Total Donations",
-        dataIndex: 'totalDonations',
-        key: 'totalDonations',
-    },
-    {
-        title: 'Address Line 1',
-        dataIndex: 'addressLine1',
-        key: 'addressLine1',
-    },
-    {
-        title: 'Address Line 2',
-        dataIndex: 'addressLine2',
-        key: 'addressLine2',
-    },
+  {
+      title: 'Full Name',
+      dataIndex: 'fullName',
+      key: 'fullName',
+      width: 150,
+  },
+  {
+      title: 'City',
+      dataIndex: 'city',
+      key: 'city',
+      width: 100,
+  },
+  {
+      title: "Organization Name",
+      dataIndex: 'organizationName',
+      key: 'organizationName',
+      width: 200,
+  },
+  {
+      title: "Total Donations",
+      dataIndex: 'totalDonations',
+      key: 'totalDonations',
+      width: 120,
+  },
 ];
 
 export const attendeeColumns = [

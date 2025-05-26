@@ -1,13 +1,10 @@
-import AddEvent from "../components/AddEvent";
+import AddEvent from "../components/events/AddEvent";
 
 
 
 const AddEventPage: React.FC = () => {
     return (
-        <div>
-            <header className="page-header">
-                <h1>Add Event</h1>
-            </header>
+        <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-100 p-8">
             <AddEvent />
         </div>
     );
