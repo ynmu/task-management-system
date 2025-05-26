@@ -13,3 +13,7 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+.bg-gradient-45-indigo-purple {
+  background: linear-gradient(45deg, #667eea 0%, #764ba2 100%);
+}

@@ -27,6 +27,7 @@ model Event {
   status      Boolean
   donors      DonorOnEvent[]
   sharedRoles RoleOnEvent[]
+  notes       Note[]
 }
 
 model Role {
@@ -41,8 +42,8 @@ model RoleOnEvent {
   eventId Int
   roleId  Int
 
-  event   Event @relation(fields: [eventId], references: [id])
-  role    Role  @relation(fields: [roleId], references: [id])
+  event   Event @relation(fields: [eventId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  role    Role  @relation(fields: [roleId], references: [id], onDelete: Cascade, onUpdate: Cascade)
 
   @@id([eventId, roleId]) // Composite primary key
 }
@@ -59,6 +60,7 @@ model User {
   firstName     String?
   lastName      String?
   email         String? @unique
+  notes         Note[]
 }
 
 
@@ -104,4 +106,16 @@ model DonorOnEvent {
   event    Event  @relation(fields: [eventId], references: [id], onDelete: Cascade, onUpdate: Cascade)
 
   @@unique([donorId, eventId])
+}
+
+model Note {
+  id        Int      @id @default(autoincrement())
+  message   String
+  createdAt DateTime @default(now())
+
+  eventId   Int
+  event     Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
+
+  senderId  Int
+  sender    User     @relation(fields: [senderId], references: [id], onDelete: Cascade)
 }

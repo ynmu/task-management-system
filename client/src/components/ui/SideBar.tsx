@@ -14,7 +14,7 @@ import {
 import { useNavigate } from 'react-router-dom';
 import clsx from 'clsx';
 import { useAuth } from '../../context/AuthContext';
-import UserProfile from '../users/UserProfile';
+import UserAvatar from '../users/UserAvatar';
 import UserStatus from '../users/UserStatus';
 
 const NAVBAR_HEIGHT = 60; // Height of the navbar
@@ -93,7 +93,8 @@ const SideBar: React.FC = () => {
           <div className="flex items-start gap-3 mb-6">
             {collapsed ? (
               // Show only the profile picture when collapsed
-              <UserProfile
+              <UserAvatar
+                key={`${user?.profileUrl}-${user?.userName}-${user?.firstName}-${user?.lastName}`}
                 userName={user.userName}
                 profileUrl={user.profileUrl}
                 size={40} // Adjust size for collapsed view
@@ -101,13 +102,16 @@ const SideBar: React.FC = () => {
             ) : (
               // Show full user info when expanded
               <>
-                <UserProfile
+                <UserAvatar
+                  key={`${user?.profileUrl}-${user?.userName}-${user?.firstName}-${user?.lastName}`}
                   userName={user.userName}
                   profileUrl={user.profileUrl}
                   size={50}
                 />
                 <div className="flex flex-col justify-center">
-                  <span className="font-semibold text-sm leading-tight">{user.userName}</span>
+                  <span className="font-semibold text-sm leading-tight">
+                    { user?.firstName && user?.lastName ? `${user.firstName} ${user.lastName}` : user?.userName || 'N/A' }
+                  </span>
                   <span className="text-gray-500 text-xs">{user.roleName}</span>
                   <div className="mt-1">
                     <UserStatus
