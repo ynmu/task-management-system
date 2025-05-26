@@ -2,7 +2,23 @@
 
 This is the repository for the BC Cancer Event Management System.
 
-<img width="1336" alt="image" src="https://github.com/user-attachments/assets/16b4e9a8-7244-45c6-bc85-1f695ddc1178" />
+Auth Page
+<img width="1466" alt="image" src="https://github.com/user-attachments/assets/22feb75e-a25f-4bb6-8b21-eec8f3af26e7" />
+
+Dashboard
+<img width="1469" alt="image" src="https://github.com/user-attachments/assets/73aab1f6-3605-4124-b963-a5d85adeb417" />
+
+Event creation
+<img width="1468" alt="image" src="https://github.com/user-attachments/assets/d864354c-37d3-45a7-b012-12906dce5c7d" />
+
+Manage events and view notes
+<img width="1468" alt="image" src="https://github.com/user-attachments/assets/fafc1cfd-9c39-4069-9409-2c944722f12f" />
+
+Check team structure
+<img width="1470" alt="image" src="https://github.com/user-attachments/assets/9b6fbf38-c6bd-47b1-bdbb-00fea602684e" />
+
+Account management
+<img width="1470" alt="image" src="https://github.com/user-attachments/assets/2adad95a-1865-428c-b534-ec07f7006500" />
 
 
 ## Project Setup and Running
