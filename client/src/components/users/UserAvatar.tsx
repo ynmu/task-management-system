@@ -1,4 +1,3 @@
-// src/components/ui/UserProfile.tsx
 import React from 'react';
 import clsx from 'clsx';
 
@@ -13,12 +12,13 @@ const COLORS = [
   'bg-teal-500',
 ];
 
-interface UserProfileProps {
+interface UserAvatarProps {
   userName: string;
   firstName?: string;
   lastName?: string;
   profileUrl?: string;
   size?: number; // in pixels, default 40
+  style?: React.CSSProperties; // additional styles
 }
 
 const getInitials = (userName: string, firstName?: string, lastName?: string): string => {
@@ -35,23 +35,30 @@ const getColor = (userName: string): string => {
   return COLORS[hash % COLORS.length];
 };
 
-const UserProfile: React.FC<UserProfileProps> = ({
+const UserAvatar: React.FC<UserAvatarProps> = ({
   userName,
   firstName,
   lastName,
   profileUrl,
   size = 40,
+  style = {},
 }) => {
   const initials = getInitials(userName, firstName, lastName);
   const colorClass = getColor(userName);
-  const dimensionStyle = { width: size, height: size };
+  const fontSize = Math.floor(size * 0.45);
+  const dimensionStyle: React.CSSProperties = {
+    width: size,
+    height: size,
+    fontSize: `${fontSize}px`,
+    ...style, // ensure passed styles override defaults
+  };
 
   return profileUrl ? (
     <img
       src={profileUrl}
       alt="Profile"
-      style={dimensionStyle}
-      className="rounded-full object-cover"
+      style={{ width: size, height: size, ...style }}
+      className="rounded-full object-cover select-none"
     />
   ) : (
     <div
@@ -66,4 +73,4 @@ const UserProfile: React.FC<UserProfileProps> = ({
   );
 };
 
-export default UserProfile;
+export default UserAvatar;
