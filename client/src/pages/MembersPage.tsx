@@ -4,6 +4,7 @@ import '../css/MembersPage.css';
 import '../css/Pages.css';
 import { TbUserQuestion } from "react-icons/tb";
 import { useAuth } from '../context/AuthContext';
+import TeamRoleCard from '../components/users/TeamRoleCard';
 
 interface Role {
   id: number;
@@ -24,57 +25,41 @@ const MembersPage: React.FC = () => {
   const { user: currentUser } = useAuth();
 
   useEffect(() => {
-    // Fetch all roles
     fetch(`${API_BASE_URL}/users/roles`)
       .then((response) => response.json())
       .then((data: Role[]) => {
         setRoles(data);
-        // Fetch users for each role
         data.forEach((role) => {
           fetch(`${API_BASE_URL}/users/roles/${role.id}`)
             .then((response) => response.json())
             .then((users: User[]) => {
-              setUsersByRole((prevUsersByRole) => ({
-                ...prevUsersByRole,
-                [role.id]: users,
-              }));
+              setUsersByRole((prev) => ({ ...prev, [role.id]: users }));
             })
-            .catch((error) => console.error(`Failed to fetch users for role ${role.id}:`, error));
+            .catch((err) => console.error(`Failed to fetch users for role ${role.id}:`, err));
         });
       })
-      .catch((error) => console.error('Failed to fetch roles:', error));
+      .catch((err) => console.error('Failed to fetch roles:', err));
   }, []);
 
   return (
-    <div className="users-page">
-      <div className="users-page-container">
-        <div className="roles-table-section">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-100 p-8">
+      <div className="rounded-3xl shadow-2xl border border-white/10 overflow-hidden">
+        {/* Header */}
+        <div className="bg-gradient-45-indigo-purple p-6">
+          <h3 className="text-white text-xl font-semibold">Team Members</h3>
+          <p className="text-white/80 text-sm">Grouped by roles</p>
+        </div>
+
+        {/* Body */}
+        
+        <div className="p-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {roles.map((role) => (
-            <div key={role.id} className="role-table">
-              <div className="role-header">{role.roleName}</div>
-              <div className="role-headers">
-                <span>User Name</span>
-                <span>Employee Number</span>
-              </div>
-              <div className="role-users-list">
-                {usersByRole[role.id] && usersByRole[role.id].length > 0 ? (
-                  usersByRole[role.id].map((user) => (
-                    <div key={user.id} className="role-user-item">
-                      <span className='role-user-item-name'>
-                        {user.userName}
-                        {user.id === currentUser?.id && <div className="current-user-tag">You</div>}
-                      </span>
-                      <span>{String(user.employeeNumber).padStart(6, '0')}</span>
-                    </div>
-                  ))
-                ) : (
-                  <div className="no-users">
-                    <TbUserQuestion size={30} />
-                    <span>No users assigned to this role.</span>
-                  </div>
-                )}
-              </div>
-            </div>
+            <TeamRoleCard
+              roleId={role.id}
+              roleName={role.roleName}
+              users={usersByRole[role.id] || []}
+              currentUserId={currentUser?.id}
+            />
           ))}
         </div>
       </div>
