@@ -11,7 +11,11 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
   const { isAuthenticated, loading } = useAuth();
 
   if (loading) {
-    return <div className="lds-facebook"><div></div><div></div><div></div></div>
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <div className="lds-facebook"><div></div><div></div><div></div></div>
+      </div>
+    )
   }
 
   if (!isAuthenticated) {
