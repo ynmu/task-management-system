@@ -1,7 +1,7 @@
 // src/context/AuthContext.tsx
 import React, { createContext, useState, useContext, ReactNode, useEffect } from 'react';
 
-interface User {
+export interface User {
   id: number;
   userName: string;
   employeeNumber: number;
@@ -10,6 +10,7 @@ interface User {
   firstName?: string;
   lastName?: string;
   profileUrl?: string;
+  email?: string;
 }
 
 interface AuthContextProps {
@@ -29,6 +30,14 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState<boolean>(true); // Initialize loading state
 
+  const setUserAndPersist = (user: User | null) => {
+    setUser(user);
+    if (user) {
+      localStorage.setItem('user', JSON.stringify(user));
+    } else {
+      localStorage.removeItem('user');
+    }
+  };
 
   // Load user data from localStorage on component mount
   useEffect(() => {
@@ -47,17 +56,16 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   
 
   const login = (userData: User) => {
-    setUser(userData);
+    setUserAndPersist(userData);
     setIsAuthenticated(true);
-    localStorage.setItem('user', JSON.stringify(userData)); // Save user data to localStorage
     setLoading(false);
   };
-
+  
   const logout = () => {
-    setUser(null);
+    setUserAndPersist(null);
     setIsAuthenticated(false);
-    localStorage.removeItem('user'); // Remove user data from localStorage
   };
+  
 
   return (
     <AuthContext.Provider value={
@@ -66,7 +74,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         user,
         loading,
         setIsAuthenticated,
-        setUser,
+        setUser: setUserAndPersist,
         login,
         logout
       }

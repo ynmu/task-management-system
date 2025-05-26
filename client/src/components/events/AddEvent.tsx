@@ -7,6 +7,7 @@ import { API_BASE_URL } from '../../config';
 import { useAuth }  from '../../context/AuthContext';
 import axios from 'axios';
 import { saveAs } from 'file-saver';
+import DonorFilterPanel from "./DonorFilterPanel";
 
 const { Title, Text } = Typography;
 
@@ -312,19 +313,24 @@ const AddEvent: React.FC = () => {
     };
 
     return (
-        <Row gutter={24} style={{ height: '100vh', padding: '24px' }}>
+        <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-5 gap-8 items-start">
             {/* Left Panel - Event Form */}
-            <Col span={10}>
-                <Card 
-                    title={<Title level={3}>Create New Event</Title>}
-                    style={{ height: '100%', overflow: 'auto' }}
-                >
-                    <Form
-                        form={form}
-                        layout="vertical"
-                    >
+            <div className="lg:col-span-2 sticky top-8">
+                <div className="bg-white rounded-3xl p-8 shadow-xl border border-gray-200">
+                    <div className="mb-6">
+                      <h4 className="text-xl font-semibold mb-1 bg-gradient-to-r from-indigo-400 to-purple-600 bg-clip-text text-transparent">
+                        Event Details
+                      </h4>
+                      {filteredParticipants.length > 0 && (
+                          <span className="text-blue-400 text-sm font-medium">
+                              {filteredParticipants.length} donors found
+                          </span>
+                      )}
+                    </div>
+
+                    <Form form={form} layout="vertical" className="space-y-2">
                         {/* Role Selection */}
-                        <Form.Item label="Share Access With Roles">
+                        <Form.Item label={<span className="text-gray-800 font-medium">Share Access With Roles</span>}>
                             <Select
                                 mode="multiple"
                                 value={selectedRoleIds}
@@ -336,6 +342,12 @@ const AddEvent: React.FC = () => {
                                     setSelectedRoleIds(ids);
                                 }}
                                 placeholder="Select roles to share event with"
+                                className="w-full"
+                                style={{ 
+                                    backgroundColor: 'rgba(255, 255, 255, 0.05)', 
+                                    borderColor: 'rgba(255, 255, 255, 0.4)',
+                                    borderRadius: '12px'
+                                }}
                             >
                                 {roles.map(role => (
                                     <Select.Option key={role.id} value={role.id}>
@@ -347,323 +359,227 @@ const AddEvent: React.FC = () => {
 
                         {/* Event Name */}
                         <Form.Item
-                            label="Event Name"
+                            label={<span className="text-gray-800 font-medium">Event Name</span>}
                             name="name"
                             rules={[{ required: true, message: 'Please enter the event name' }]}
                         >
-                            <Input placeholder="Enter event title" />
+                            <Input 
+                                placeholder="Enter event title" 
+                                className="bg-white/5 border-white/10 text-white rounded-xl h-12"
+                            />
                         </Form.Item>
 
                         {/* Event Date and Topic */}
-                        <Row gutter={16}>
-                            <Col span={12}>
-                                <Form.Item
-                                    label="Event Date"
-                                    name="date"
-                                    rules={[{ required: true, message: 'Please enter the event date' }]}
+                        <div className="grid grid-cols-2 gap-4">
+                            <Form.Item
+                                label={<span className="text-gray-800 font-medium">Event Date</span>}
+                                name="date"
+                                rules={[{ required: true, message: 'Please enter the event date' }]}
+                            >
+                                <DatePicker 
+                                    className="w-full bg-white/5 border-white/10 text-white rounded-xl h-12" 
+                                />
+                            </Form.Item>
+                            <Form.Item
+                                label={<span className="text-gray-800 font-medium">Event Topic</span>}
+                                name="topic"
+                                rules={[{ required: true, message: 'Please select a category' }]}
+                            >
+                                <Select 
+                                    placeholder="Select a category"
+                                    className="w-full"
+                                    style={{ 
+                                        backgroundColor: 'rgba(255, 255, 255, 0.05)', 
+                                        borderColor: 'rgba(255, 255, 255, 0.4)',
+                                        borderRadius: '12px'
+                                    }}
                                 >
-                                    <DatePicker style={{ width: '100%' }} />
-                                </Form.Item>
-                            </Col>
-                            <Col span={12}>
-                                <Form.Item
-                                    label="Event Topic"
-                                    name="topic"
-                                    rules={[{ required: true, message: 'Please select a category' }]}
-                                >
-                                    <Select placeholder="Select a category">
-                                        {topicNames.map(topic => (
-                                            <Select.Option key={topic} value={topic}>
-                                                {topic}
-                                            </Select.Option>
-                                        ))}
-                                    </Select>
-                                </Form.Item>
-                            </Col>
-                        </Row>
+                                    {topicNames.map(topic => (
+                                        <Select.Option key={topic} value={topic}>
+                                            {topic}
+                                        </Select.Option>
+                                    ))}
+                                </Select>
+                            </Form.Item>
+                        </div>
 
                         {/* Event Size and Location */}
-                        <Row gutter={16}>
-                            <Col span={12}>
-                                <Form.Item
-                                    label="Event Size"
-                                    name="size"
-                                    rules={[{ required: true, message: 'Please enter the event size' }]}
+                        <div className="grid grid-cols-2 gap-4">
+                            <Form.Item
+                                label={<span className="text-gray-800 font-medium">Event Size</span>}
+                                name="size"
+                                rules={[{ required: true, message: 'Please enter the event size' }]}
+                            >
+                                <InputNumber 
+                                    min={1} 
+                                    placeholder="Max participants" 
+                                    className="!w-full bg-white/5 border-white/10 text-white rounded-xl h-12"
+                                />
+                            </Form.Item>
+                            <Form.Item
+                                label={<span className="text-gray-800 font-medium">Location</span>}
+                                name="location"
+                                rules={[{ required: true, message: 'Please select a location' }]}
+                            >
+                                <Select 
+                                    placeholder="Select a location"
+                                    className="w-full"
+                                    style={{ 
+                                        backgroundColor: 'rgba(255, 255, 255, 0.05)', 
+                                        borderColor: 'rgba(255, 255, 255, 0.4)',
+                                        borderRadius: '12px'
+                                    }}
                                 >
-                                    <InputNumber min={1} style={{ width: '100%' }} placeholder="Max participants" />
-                                </Form.Item>
-                            </Col>
-                            <Col span={12}>
-                                <Form.Item
-                                    label="Location"
-                                    name="location"
-                                    rules={[{ required: true, message: 'Please select a location' }]}
-                                >
-                                    <Select placeholder="Select a location">
-                                        {cityNames.map(city => (
-                                            <Select.Option key={city} value={city}>
-                                                {city}
-                                            </Select.Option>
-                                        ))}
-                                    </Select>
-                                </Form.Item>
-                            </Col>
-                        </Row>
+                                    {cityNames.map(city => (
+                                        <Select.Option key={city} value={city}>
+                                            {city}
+                                        </Select.Option>
+                                    ))}
+                                </Select>
+                            </Form.Item>
+                        </div>
 
                         {/* Event Description */}
-                        <Form.Item label="Event Description" name="description">
-                            <Input.TextArea rows={4} placeholder="Enter event description" />
+                        <Form.Item label={<span className="text-gray-800 font-medium">Event Description</span>} name="description">
+                            <Input.TextArea 
+                                rows={4} 
+                                placeholder="Enter event description" 
+                                className="bg-white/5 border-white/10 text-white rounded-xl"
+                            />
                         </Form.Item>
-
-                        {/* Save Event Button */}
-                        <Form.Item>
-                            <Button 
-                                className="custom-antd-button" 
-                                type="primary" 
-                                block
-                                loading={loading}
-                                onClick={handleSaveEvent}
-                                disabled={selectedParticipants.length === 0}
-                            >
-                                Save Event
-                            </Button>
-                        </Form.Item>
-
-                        <Divider />
 
                         {/* Selected Participants Summary */}
                         {selectedParticipants.length > 0 && (
-                            <div style={{ marginBottom: 16 }}>
-                                <Text strong>Selected Participants: {selectedParticipants.length}</Text>
-                                <Button 
-                                    type="link" 
-                                    size="small" 
+                            <div className="flex items-center justify-between p-4 bg-gradient-to-r from-blue-500/10 to-purple-500/10 rounded-xl border border-white/10">
+                                <span className="text-gray-500 font-medium">
+                                    Selected Participants: {selectedParticipants.length}
+                                </span>
+                                <button 
                                     onClick={clearSelectedParticipants}
-                                    style={{ marginLeft: 8 }}
+                                    className="text-blue-400 hover:text-blue-300 text-sm font-medium transition-colors"
                                 >
                                     Clear Selection
-                                </Button>
+                                </button>
                             </div>
                         )}
 
                         {/* Action Buttons */}
-                        <Row gutter={16}>
-                            <Col span={12}>
-                                <Button 
-                                    className="custom-antd-button" 
-                                    type="primary" 
-                                    block
-                                    onClick={handleSaveEvent}
-                                    disabled={selectedParticipants.length === 0}
-                                >
-                                    Save Event
-                                </Button>
-                            </Col>
-                            <Col span={12}>
-                                <Button 
-                                    className="custom-antd-button" 
-                                    id="cancel-button" 
-                                    block
-                                    onClick={handleCancel}
-                                >
-                                    Cancel
-                                </Button>
-                            </Col>
-                        </Row>
+                        <div className="grid grid-cols-2 gap-4">
+                            <button
+                                type="button"
+                                onClick={handleSaveEvent}
+                                disabled={selectedParticipants.length === 0}
+                                className="bg-gradient-45-indigo-purple text-white py-3 px-6 rounded-xl font-semibold disabled:opacity-50 disabled:cursor-not-allowed hover:shadow-lg hover:shadow-blue-500/25 transition-all duration-300 transform hover:-translate-y-0.5 disabled:transform-none"
+                            >
+                                Save Event
+                            </button>
+                            <button
+                                type="button"
+                                onClick={handleCancel}
+                                className="bg-gray-500 border border-white/10 text-white py-3 px-6 rounded-xl font-semibold hover:bg-gray-400 transition-all duration-300"
+                            >
+                                Clear Filter
+                            </button>
+                        </div>
                     </Form>
-                </Card>
-            </Col>
+                </div>
+            </div>
 
             {/* Right Panel - Donors List */}
-            <Col span={14}>
-                <Card 
-                    title={
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                            <Title level={3} style={{ margin: 0 }}>
-                                Available Donors {filteredParticipants.length > 0 && `(${filteredParticipants.length})`}
-                            </Title>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                                {selectedParticipants.length > 0 && (
-                                    <Text type="secondary">
+          <div className="lg:col-span-3 flex flex-col">
+              <div className="bg-black rounded-3xl shadow-2xl border border-white/10 overflow-hidden flex-1">
+                    {/* Header */}
+                    <div className="bg-gradient-45-indigo-purple p-6 flex justify-between items-center">
+                        <div>
+                            <h3 className="text-white text-xl font-semibold">Available Donors</h3>
+                            {filteredParticipants.length > 0 && (
+                                <span className="text-white/80 text-sm">{filteredParticipants.length} found</span>
+                            )}
+                        </div>
+                        <div className="flex items-center gap-4">
+                            {selectedParticipants.length > 0 && (
+                                <div className="bg-white/20 backdrop-blur-sm px-4 py-2 rounded-2xl">
+                                    <span className="text-white text-sm font-medium">
                                         {selectedParticipants.length} selected
-                                    </Text>
-                                )}
-                                <Button
-                                    icon={<FilterOutlined />}
-                                    onClick={() => setShowFilters(!showFilters)}
-                                    type={showFilters ? 'primary' : 'default'}
-                                    size="small"
-                                >
-                                    Filters
-                                </Button>
-                            </div>
+                                    </span>
+                                </div>
+                            )}
+                            <button
+                                onClick={() => setShowFilters(!showFilters)}
+                                className={`flex items-center gap-2 px-4 py-2 rounded-xl font-medium transition-all duration-300 ${
+                                    showFilters 
+                                        ? 'bg-white text-blue-600' 
+                                        : 'bg-white/20 text-white hover:bg-white/30'
+                                }`}
+                            >
+                                <FilterOutlined />
+                                Filters
+                            </button>
                         </div>
-                    }
-                    style={{ height: '100%' }}
-                    bodyStyle={{ padding: 0, height: 'calc(100% - 57px)', overflow: 'hidden', position: 'relative' }}
-                >
-                    {/* Floating Filter Panel */}
-                    {showFilters && (
-                        <div style={{
-                            position: 'absolute',
-                            top: 0,
-                            left: 0,
-                            right: 0,
-                            zIndex: 10,
-                            background: 'linear-gradient(135deg, #f6f9fc 0%, #ffffff 100%)',
-                            border: '1px solid #e8f4fd',
-                            borderRadius: '12px',
-                            padding: '20px',
-                            margin: '16px',
-                            boxShadow: '0 8px 32px rgba(24, 144, 255, 0.12), 0 2px 8px rgba(24, 144, 255, 0.08)',
-                            backdropFilter: 'blur(8px)',
-                        }}>
-                            <div style={{ marginBottom: '16px' }}>
-                                <Text strong style={{ fontSize: '16px', color: '#1890ff' }}>
-                                    <FilterOutlined style={{ marginRight: '8px' }} />
-                                    Filter Donors
-                                </Text>
-                            </div>
-                            
-                            <Row gutter={16} style={{ marginBottom: '16px' }}>
-                                <Col span={8}>
-                                    <div style={{ marginBottom: '8px' }}>
-                                        <Text strong>Cities</Text>
-                                    </div>
-                                    <Select
-                                        mode="multiple"
-                                        style={{ width: '100%' }}
-                                        placeholder="Select cities"
-                                        value={filters.cities}
-                                        onChange={(cities) => setFilters(prev => ({ ...prev, cities }))}
-                                        maxTagCount="responsive"
-                                    >
-                                        {cityNames.map(city => (
-                                            <Select.Option key={city} value={city}>
-                                                {city}
-                                            </Select.Option>
-                                        ))}
-                                    </Select>
-                                </Col>
-                                
-                                <Col span={8}>
-                                    <div style={{ marginBottom: '8px' }}>
-                                        <Text strong>Total Donations</Text>
-                                    </div>
-                                    <div style={{ padding: '0 8px' }}>
-                                        <Slider
-                                            range
-                                            min={0}
-                                            max={20}
-                                            step={1}
-                                            value={filters.donationRange}
-                                            onChange={(range) => setFilters(prev => ({ ...prev, donationRange: range as [number, number] }))}
-                                            marks={{ 0: '0', 10: '10', 20: '20' }}
-                                        />
-                                    </div>
-                                </Col>
-                                
-                                <Col span={8}>
-                                    <div style={{ marginBottom: '8px' }}>
-                                        <Text strong>Communication Preferences</Text>
-                                    </div>
-                                    <Select
-                                        mode="multiple"
-                                        style={{ width: '100%' }}
-                                        placeholder="Select preferences"
-                                        value={filters.communicationPreferences}
-                                        onChange={(prefs) => setFilters(prev => ({ ...prev, communicationPreferences: prefs }))}
-                                        maxTagCount="responsive"
-                                    >
-                                        {communicationOptions.map(option => (
-                                            <Select.Option key={option.value} value={option.value}>
-                                                {option.label}
-                                            </Select.Option>
-                                        ))}
-                                    </Select>
-                                </Col>
-                            </Row>
-                            
-                            <Space>
-                                <Button 
-                                    type="primary" 
-                                    onClick={handleApplyFilters}
-                                    loading={loading}
-                                    style={{
-                                        background: 'linear-gradient(135deg, #1890ff 0%, #096dd9 100%)',
-                                        border: 'none',
-                                        borderRadius: '6px',
-                                        boxShadow: '0 2px 8px rgba(24, 144, 255, 0.3)'
-                                    }}
-                                >
-                                    Apply Filters
-                                </Button>
-                                <Button 
-                                    icon={<ClearOutlined />} 
-                                    onClick={handleClearFilters}
-                                    style={{
-                                        borderRadius: '6px'
-                                    }}
-                                >
-                                    Clear All
-                                </Button>
-                                <Button 
-                                    type="text" 
-                                    onClick={() => setShowFilters(false)}
-                                    style={{ color: '#8c8c8c' }}
-                                >
-                                    Close
-                                </Button>
-                            </Space>
-                        </div>
-                    )}
+                    </div>
+                    
+                    {/* filter panel */}
+                    {showFilters && <DonorFilterPanel
+                      show={showFilters}
+                      setShow={setShowFilters}
+                      filters={filters}
+                      setFilters={setFilters}
+                      cityNames={cityNames}
+                      communicationOptions={communicationOptions}
+                      loading={loading}
+                      onApply={handleApplyFilters}
+                      onClear={handleClearFilters}
+                    />}
 
                     {/* Table Container */}
-                    <div style={{
-                        height: '100%',
-                        position: 'relative'
-                    }}>
+                    <div className="relative bg-black">
                         {filteredParticipants.length > 0 ? (
-                            <Table
-                                rowSelection={{
-                                    type: 'checkbox',
-                                    selectedRowKeys: selectedParticipants,
-                                    onChange: handleSelectedParticipants,
-                                }}
-                                dataSource={filteredParticipants}
-                                columns={columns}
-                                rowKey="id"
-                                scroll={{ 
-                                    x: 700,
-                                    y: 'calc(100vh - 200px)'
-                                }}
-                                pagination={{
-                                    pageSize: 15,
-                                    showSizeChanger: true,
-                                    showQuickJumper: true,
-                                    showTotal: (total, range) => 
-                                        `${range[0]}-${range[1]} of ${total} donors`,
-                                }}
-                            />
+                            <div className="overflow-hidden bg-white">
+                                <Table
+                                    rowSelection={{
+                                        type: 'checkbox',
+                                        selectedRowKeys: selectedParticipants,
+                                        onChange: handleSelectedParticipants,
+                                    }}
+                                    dataSource={filteredParticipants}
+                                    columns={columns}
+                                    rowKey="id"
+                                    scroll={{ 
+                                        x: 700,
+                                        y: 'calc(100vh - 350px)'
+                                    }}
+                                    pagination={{
+                                        pageSize: 10,
+                                        showSizeChanger: true,
+                                        showQuickJumper: true,
+                                        showTotal: (total, range) => 
+                                            `${range[0]}-${range[1]} of ${total} donors`,
+                                        style: {
+                                            width: 'calc(100% - 18px)',
+                                            color: 'black',
+                                            backgroundColor: 'rgb(255, 255, 255)',
+                                            borderColor: 'rgba(255, 255, 255, 0.2)',
+                                        }
+                                    }}
+                                    className="custom-dark-table"
+                                    style={{
+                                        backgroundColor: 'transparent',
+                                    }}
+                                />
+                            </div>
                         ) : (
-                            <div style={{ 
-                                display: 'flex', 
-                                justifyContent: 'center', 
-                                alignItems: 'center', 
-                                height: '100%',
-                                flexDirection: 'column',
-                                color: '#999'
-                            }}>
-                                <Text type="secondary" style={{ fontSize: '16px' }}>
+                            <div className="flex flex-col items-center justify-center h-full text-center p-12">
+                                <div className="text-6xl mb-4 opacity-50">📋</div>
+                                <p className="text-gray-400 text-lg">
                                     {loading ? 'Searching for donors...' : 'Search for donors to see available participants'}
-                                </Text>
+                                </p>
                             </div>
                         )}
                     </div>
-                </Card>
-            </Col>
-        </Row>
-    );
+                </div>
+            </div>
+        </div>
+  );
 };
 
 export default AddEvent;

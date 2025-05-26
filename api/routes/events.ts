@@ -95,7 +95,6 @@ router.get('/role/:roleId', async (req: Request, res: Response) => {
   }
 });
 
-
 // Update an Event
 router.put('/:id', async (req: Request, res: Response) => {
   const { id } = req.params;
@@ -123,7 +122,6 @@ router.put('/:id', async (req: Request, res: Response) => {
   }
 });
 
-
 // Delete an Event
 router.delete('/:id', async (req: Request, res: Response) => {
   const { id } = req.params;
@@ -138,5 +136,41 @@ router.delete('/:id', async (req: Request, res: Response) => {
     res.status(500).json({ error: `Failed to delete event: ${error}` });
   }
 });
+
+
+// Get all attendees of an Event
+router.get('/:id/attendees', async (req: Request, res: Response) => {
+  const { id } = req.params;
+
+  try {
+    const attendees = await prisma.donorOnEvent.findMany({
+      where: { eventId: Number(id) },
+      include: { donor: true },
+    });
+
+    const donors = attendees.map(({ donor }) => {
+      const {
+        firstGiftDate,
+        lastGiftDate,
+        lastGiftRequest,
+        ...rest
+      } = donor;
+
+      return {
+        ...rest,
+        firstGiftDate: firstGiftDate?.toString() || null,
+        lastGiftDate: lastGiftDate?.toString() || null,
+        lastGiftRequest: lastGiftRequest?.toString() || null,
+      };
+    });
+
+    res.json(donors);
+  } catch (error) {
+    console.error('Failed to fetch attendees:', error);
+    res.status(500).json({ error: 'Failed to retrieve attendees' });
+  }
+});
+
+
 
 export default router;
